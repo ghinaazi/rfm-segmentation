@@ -38,7 +38,7 @@ st.markdown("""
 
 	/* Background utama */
         [data-testid="stAppViewContainer"] {
-            background-color: #FFFFFF !important; /* Kuning muda */
+            background-color: #FDE688!important; /* Kuning muda */
         }
 
         /* Bagian header (atas) */
