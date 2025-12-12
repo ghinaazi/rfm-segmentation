@@ -86,7 +86,7 @@ page = st.sidebar.selectbox(
 # ======================
 # LOAD DATA (DIPAKAI DI 2 HALAMAN)
 # ======================
-df = pd.read_excel("dataset/data_with_cluser.xlsx")
+df = pd.read_excel("dataset/data_with_cluster.xlsx")
 df2 = pd.read_csv("dataset/flo_data_20k.csv")
 
 if "first_order_date" in df.columns:
