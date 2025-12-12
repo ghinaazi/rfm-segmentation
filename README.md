@@ -2,6 +2,5 @@
 Proyek ini melakukan segmentasi pelanggan menggunakan metode RFM (Recency, Frequency, Monetary) untuk mendukung strategi pemasaran yang lebih tepat sasaran. Analisis dilengkapi dengan penerapan model machine learning dan visualisasi interaktif melalui dashboard untuk membantu pengambilan keputusan berbasis data.
 
 # Aplikasi
-Dashboard dapat diakses melalui
-[![Dashboard Preview](images/thumbnail.png)](https://rfm-segmentation-project.streamlit.app/)
+[![Dashboard Preview](image/preview.png)](https://rfm-segmentation-project.streamlit.app/)
 
