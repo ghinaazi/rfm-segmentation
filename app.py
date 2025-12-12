@@ -73,7 +73,7 @@ st.markdown("""
 
 with st.sidebar:
     st.markdown('<div class="sidebar-images">', unsafe_allow_html=True)
-    st.image("alllogo.png", width=250)
+    st.image("image/alllogo.png", width=250)
     st.markdown('</div>', unsafe_allow_html=True)
 
 st.sidebar.title("📘 Navigation")
@@ -86,8 +86,8 @@ page = st.sidebar.selectbox(
 # ======================
 # LOAD DATA (DIPAKAI DI 2 HALAMAN)
 # ======================
-df = pd.read_excel("data_all.xlsx")
-df2 = pd.read_csv("flo_data_20k.csv")
+df = pd.read_excel("dataset/data_with_cluser.xlsx")
+df2 = pd.read_csv("dataset/flo_data_20k.csv")
 
 if "first_order_date" in df.columns:
     df["first_order_date"] = pd.to_datetime(df["first_order_date"])
@@ -134,9 +134,9 @@ elif page == "Dashboard RFM":
     # ======================
     # LOAD MODELS
     # ======================
-    scaler = pickle.load(open("scaler.pkl", "rb"))
-    pca = pickle.load(open("pca.pkl", "rb"))
-    kmeans = pickle.load(open("kmeans.pkl", "rb"))
+    scaler = pickle.load(open("model/scaler.pkl", "rb"))
+    pca = pickle.load(open("model/pca.pkl", "rb"))
+    kmeans = pickle.load(open("model/kmeans.pkl", "rb"))
 
     cluster_reco = {
         0: "Prioritas Marketing",
