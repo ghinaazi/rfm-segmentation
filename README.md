@@ -14,9 +14,20 @@ Proyek ini melakukan segmentasi pelanggan menggunakan metode RFM (Recency, Frequ
 Proyek ini bertujuan untuk:
 1. Menerapkan analisis RFM (Recency, Frequency, Monetary) untuk mengukur nilai pelanggan berdasarkan perilaku transaksi mereka, sehingga dapat memberikan pemahaman kuantitatif mengenai tingkat kedekatan, aktivitas, dan kontribusi pelanggan terhadap perusahaan.
 2. Mengembangkan model segmentasi pelanggan yang akurat dan representatif menggunakan algoritma clustering seperti K-Means atau Fuzzy C-Means, serta mengevaluasi bagaimana setiap algoritma membentuk kelompok pelanggan yang memiliki karakteristik serupa.
-3. Menyajikan hasil analisis dan segmentasi pelanggan melalui dashboard interaktif di Power BI, sehingga wawasan yang dihasilkan dapat divisualisasikan secara jelas, mudah dipahami, dan mendukung pengambilan keputusan yang cepat, tepat, dan berbasis data.
+3. Menyajikan hasil analisis dan segmentasi pelanggan melalui dashboard interaktif, sehingga wawasan yang dihasilkan dapat divisualisasikan secara jelas, mudah dipahami, dan mendukung pengambilan keputusan yang cepat, tepat, dan berbasis data.
 
 4. # Dashboard
 [![Dashboard Preview](image/preview.png)](https://rfm-segmentation-project.streamlit.app/)
 
-# Panduan Dashboard
+# Teknologi & Library yang Digunakan
+
+| Kategori          | Tools / Library                                 |
+|-------------------|--------------------------------------------------|
+| Bahasa            | Python                                           |
+| Data Processing   | Pandas, NumPy, ZipFile                           |
+| Visualisasi       | Matplotlib, Seaborn                              |
+| ML Preprocessing  | StandardScaler, MinMaxScaler, PCA                |
+| Clustering        | KMeans, Fuzzy C-Means (scikit-fuzzy)             |
+| Evaluasi Model    | Silhouette Score, Davies-Bouldin Score           |
+| Tools Tambahan    | Yellowbrick (KElbowVisualizer), Google Colab     |
+
