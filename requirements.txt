@@ -77,11 +77,8 @@ cuda-core==0.3.2
 cuda-pathfinder==1.3.3
 cuda-python==12.9.4
 cuda-toolkit==12.9.1
-cudf-cu12 @ https://pypi.nvidia.com/cudf-cu12/cudf_cu12-25.10.0-cp312-cp312-manylinux_2_24_x86_64.manylinux_2_28_x86_64.whl
-cudf-polars-cu12==25.10.0
 cufflinks==0.17.3
 cuml-cu12==25.10.0
-cupy-cuda12x==13.6.0
 curl_cffi==0.13.0
 cvxopt==1.3.2
 cvxpy==1.6.7
@@ -523,8 +520,6 @@ PyYAML==6.0.3
 pyzmq==26.2.1
 quantecon==0.10.1
 raft-dask-cu12==25.10.0
-rapids-dask-dependency==25.10.0
-rapids-logger==0.1.19
 rasterio==1.4.3
 rasterstats==0.20.0
 ratelim==0.1.6
