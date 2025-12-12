@@ -3,5 +3,5 @@ Proyek ini melakukan segmentasi pelanggan menggunakan metode RFM (Recency, Frequ
 
 # Aplikasi
 Dashboard dapat diakses melalui
-https://rfm-segmentation-project.streamlit.app/
+[![Dashboard Preview](images/thumbnail.png)](https://rfm-segmentation-project.streamlit.app/)
 
