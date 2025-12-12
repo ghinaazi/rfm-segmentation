@@ -25,7 +25,7 @@ Proyek ini bertujuan untuk:
 | Kategori          | Tools / Library                                 |
 |-------------------|--------------------------------------------------|
 | Bahasa            | Python                                           |
-| Data Processing   | Pandas, NumPy, ZipFile                           |
+| Data Processing   | Pandas, NumPy                                    |
 | Visualisasi       | Matplotlib, Seaborn                              |
 | ML Preprocessing  | StandardScaler, MinMaxScaler, PCA                |
 | Clustering        | KMeans, Fuzzy C-Means (scikit-fuzzy)             |
