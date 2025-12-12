@@ -20,8 +20,7 @@ Proyek ini bertujuan untuk:
 4. # Dashboard
 [![Dashboard Preview](image/preview.png)](https://rfm-segmentation-project.streamlit.app/)
 
-# Teknologi & Library yang Digunakan
-
+# Teknologi & Library 
 | Kategori          | Tools / Library                                 |
 |-------------------|--------------------------------------------------|
 | Bahasa            | Python                                           |
@@ -29,6 +28,10 @@ Proyek ini bertujuan untuk:
 | Visualisasi       | Matplotlib, Seaborn                              |
 | ML Preprocessing  | StandardScaler, MinMaxScaler, PCA                |
 | Clustering        | KMeans, Fuzzy C-Means (scikit-fuzzy)             |
-| Evaluasi Model    | Silhouette Score, Davies-Bouldin Score           |
+| Evaluasi Model    | Silhouette Score                                 |
 | Tools Tambahan    | Yellowbrick (KElbowVisualizer), Google Colab     |
 
+# Detail Pemodelan Clustering
+1. Dataset yang digunakan adalah dataset [FLO Shopping Dataset](https://www.kaggle.com/datasets/mustafaoz158/flo-data) dari kaggle
+2. Algoritma yang dipilih adalah K-Means dengan Silhouette Score 0.589
+3. Cluster diinterpretasikan berdasarkan karakteristik Recency, Frequency, dan Monetary
