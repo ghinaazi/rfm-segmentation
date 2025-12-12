@@ -2,15 +2,21 @@
 Proyek ini melakukan segmentasi pelanggan menggunakan metode RFM (Recency, Frequency, Monetary) untuk mendukung strategi pemasaran yang lebih tepat sasaran. Analisis dilengkapi dengan penerapan model machine learning dan visualisasi interaktif melalui dashboard untuk membantu pengambilan keputusan berbasis data.
 
 # Anggota
-| No | Nama Cluster | Jumlah Customer |
+| No | Nama | ID Anggota |
 |----|--------------|----------------|
 | 1  | Yansen Demos Putra Nirwana   |   M004D5Y1968  |
 | 2  | Akbar Maulana | M004D5Y0125 |
 | 3  |  Ghina Zulfa Inayah    | M004D5X0687 |
 
-# Dashboard
-[![Dashboard Preview](image/preview.png)](https://rfm-segmentation-project.streamlit.app/)
-
 # Latar Belakang
 
+# Tujuan
+Proyek ini bertujuan untuk:
+1. Menerapkan analisis RFM (Recency, Frequency, Monetary) untuk mengukur nilai pelanggan berdasarkan perilaku transaksi mereka, sehingga dapat memberikan pemahaman kuantitatif mengenai tingkat kedekatan, aktivitas, dan kontribusi pelanggan terhadap perusahaan.
+2. Mengembangkan model segmentasi pelanggan yang akurat dan representatif menggunakan algoritma clustering seperti K-Means atau Fuzzy C-Means, serta mengevaluasi bagaimana setiap algoritma membentuk kelompok pelanggan yang memiliki karakteristik serupa.
+3. Menyajikan hasil analisis dan segmentasi pelanggan melalui dashboard interaktif di Power BI, sehingga wawasan yang dihasilkan dapat divisualisasikan secara jelas, mudah dipahami, dan mendukung pengambilan keputusan yang cepat, tepat, dan berbasis data.
 
+4. # Dashboard
+[![Dashboard Preview](image/preview.png)](https://rfm-segmentation-project.streamlit.app/)
+
+# Panduan Dashboard
