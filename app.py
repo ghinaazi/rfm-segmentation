@@ -168,7 +168,7 @@ if page == "Executive Overview":
         st.markdown(f"""
         <div class="premium-card">
             <div class="metric-label">Total Revenue</div>
-            <div class="metric-value">£{df['Monetary'].sum()/1000000:.1f}M</div>
+            <div class="metric-value">₺{df['Monetary'].sum()/1000000:.1f}M</div>
         </div>
         """, unsafe_allow_html=True)
 
@@ -202,8 +202,8 @@ if page == "Executive Overview":
             column_config={
                 "master_id": "Customer ID",
                 "first_order_date": st.column_config.DateColumn("First Join"),
-                "customer_value_total_ever_online": st.column_config.NumberColumn("Online Spend", format="£ %.2f"),
-                "customer_value_total_ever_offline": st.column_config.NumberColumn("Offline Spend", format="£ %.2f")
+                "customer_value_total_ever_online": st.column_config.NumberColumn("Online Spend", format="₺ %.2f"),
+                "customer_value_total_ever_offline": st.column_config.NumberColumn("Offline Spend", format="₺ %.2f")
             }
         )
         
@@ -346,9 +346,9 @@ if page == "Executive Overview":
                 fig_vol.update_layout(xaxis_title="Jumlah Transaksi", yaxis_title="", showlegend=False)
                 st.plotly_chart(fig_vol, use_container_width=True)
             
-            # d. Bar Chart: Revenue (Online vs Offline) -- NEW ADDITION --
+            # d. Bar Chart: Revenue (Online vs Offline)
             with col_viz4:
-                st.markdown("#### 💰 Total Revenue (Pendapatan)")
+                st.markdown("#### 💰 Total Revenue")
                 
                 # Agregasi Sum
                 rev_online = df_filtered['customer_value_total_ever_online'].sum()
@@ -365,10 +365,10 @@ if page == "Executive Overview":
                     color_discrete_map={'Online Revenue': '#EF8505', 'Offline Revenue': '#323232'}
                 )
                 
-                # Format text agar ada currency pound (£) dan disingkat (misal 1.2M)
-                fig_rev.update_traces(texttemplate='£%{text:.2s}', textposition='inside')
+                # Format text Lira (₺)
+                fig_rev.update_traces(texttemplate='₺%{text:.2s}', textposition='inside')
                 
-                fig_rev.update_layout(xaxis_title="Total Revenue (£)", yaxis_title="", showlegend=False)
+                fig_rev.update_layout(xaxis_title="Total Revenue (₺)", yaxis_title="", showlegend=False)
                 st.plotly_chart(fig_rev, use_container_width=True)
 
             # === ROW 3: CATEGORIES (MOVED DOWN FOR BETTER VIEW) ===
@@ -404,7 +404,7 @@ elif page == "Dashboard RFM":
     
     k1, k2, k3 = st.columns(3)
     k1.metric("Active Customers", f"{total_cust:,}", "User Base")
-    k2.metric("Average Spending", f"£ {avg_monetary:,.0f}", "per User")
+    k2.metric("Average Spending", f"₺ {avg_monetary:,.0f}", "per User")
     k3.metric("Clustering Confidence", "Silhouette 0.65", "High Quality")
 
     st.markdown("---")
