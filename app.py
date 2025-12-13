@@ -309,9 +309,10 @@ cluster_names = {
     2: "Medium / Potential"
 }
 recommendation_text = {
-    0: "🔍 Reaktivasi: Kirim voucher 'We Miss You', diskon urgensi tinggi.",
-    1: "💎 Retensi VIP: Reward eksklusif, early access, layanan prioritas.",
-    2: "📈 Upselling: Tawarkan bundling produk, program poin loyalty."
+    recommendation_text = {
+    0: "🔍 **Strategi Reaktivasi:** Pelanggan ini sudah lama tidak aktif. Segera picu minat mereka kembali dengan kampanye 'Win-Back' personal. Berikan voucher diskon dengan urgensi tinggi (limited time) untuk mendorong transaksi instan.",
+    1: "💎 **Retensi Prioritas (VIP):** Ini adalah aset berharga bisnis Anda. Fokus pada eksklusivitas dengan memberikan akses awal (Early Access) ke produk baru, layanan prioritas, dan reward khusus yang tidak dimiliki pelanggan lain.",
+    2: "📈 **Peluang Pertumbuhan:** Pelanggan ini memiliki potensi besar untuk menjadi loyal. Dorong nilai transaksi (Average Order Value) mereka melalui teknik Upselling, penawaran paket bundling menarik, atau insentif poin loyalitas."
 }
 
 # --- FUNGSI BANTUAN VISUAL UNTUK PLOTLY ---
