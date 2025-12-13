@@ -399,8 +399,8 @@ if page == "Executive Overview":
                 cat_counts = df_exploded["categories"].value_counts().reset_index()
                 cat_counts.columns = ['Category', 'Count']
                 
-                # Ambil Top 10
-                cat_counts = cat_counts.head(10).sort_values(by='Count', ascending=True)
+                # Ambil Top 5
+                cat_counts = cat_counts.head(5).sort_values(by='Count', ascending=True)
                 
                 fig_bar = px.bar(
                     cat_counts, x='Count', y='Category', orientation='h',
