@@ -267,12 +267,6 @@ with st.sidebar:
     """, unsafe_allow_html=True)
 
 # ======================
-# HALAMAN UTAMA
-# ======================
-st.title(f"{page}")
-st.write("Konten dashboard ditampilkan di sini...")
-
-# ======================
 # 4. LOAD DATA & MODELS
 # ======================
 try:
