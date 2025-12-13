@@ -115,8 +115,43 @@ if page == "Overview":
     st.subheader("Preview Dataset")
     st.dataframe(df2.head())
 
-    st.info("Gunakan menu di sidebar untuk membuka **Dashboard RFM**.")
+	st.subheader("🧾 Metadata Dataset")
 
+metadata = {
+    "Variabel": [
+        "master_id",
+        "order_channel",
+        "last_order_channel",
+        "first_order_date",
+        "last_order_date",
+        "last_order_date_online",
+        "last_order_date_offline",
+        "order_num_total_ever_online",
+        "order_num_total_ever_offline",
+        "customer_value_total_ever_offline",
+        "customer_value_total_ever_online",
+        "interested_in_categories_12"
+    ],
+    "Deskripsi": [
+        "Unique client number",
+        "Channel belanja yang digunakan",
+        "Channel pembelian terakhir",
+        "Tanggal pembelian pertama",
+        "Tanggal pembelian terakhir",
+        "Tanggal pembelian online terakhir",
+        "Tanggal pembelian offline terakhir",
+        "Total transaksi online",
+        "Total transaksi offline",
+        "Total nilai transaksi offline",
+        "Total nilai transaksi online",
+        "Kategori belanja dalam 12 bulan terakhir"
+    ]
+}
+
+metadata_df = pd.DataFrame(metadata)
+st.dataframe(metadata_df, use_container_width=True)
+
+ st.info("Gunakan menu di sidebar untuk membuka **Dashboard RFM**.")
 
 # ============================================================
 # ===============  HALAMAN 2 — DASHBOARD RFM ==================
