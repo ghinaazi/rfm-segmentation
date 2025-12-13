@@ -309,9 +309,9 @@ cluster_names = {
     2: "Medium / Potential"
 }
 recommendation_text = {
-    0: "🔍 <b>Strategi Reaktivasi:</b> Pelanggan ini sudah cukup lama tidak bertransaksi. Ini momen yang tepat untuk mengajak mereka kembali dengan pendekatan yang lebih personal. Tawarkan promo atau voucher dengan batas waktu tertentu agar muncul rasa urgensi dan keinginan untuk segera melakukan pembelian.",
-    1: "💎 <b>Retensi Prioritas (VIP):</b> Pelanggan ini termasuk kategori bernilai tinggi bagi bisnis Anda. Pertahankan loyalitas mereka dengan memberikan pengalaman eksklusif, seperti akses lebih awal ke produk terbaru, layanan khusus, atau reward istimewa sebagai bentuk apresiasi.",
-    2: "📈 <b>Peluang Pertumbuhan:</b> Pelanggan ini menunjukkan potensi untuk berkembang menjadi pelanggan setia. Anda dapat meningkatkan nilai transaksi mereka dengan menawarkan produk pelengkap, paket bundling yang relevan, atau program loyalitas yang memberikan keuntungan jangka panjang."
+    0: "<b>Strategi Reaktivasi:</b> Pelanggan ini sudah cukup lama tidak bertransaksi. Ini momen yang tepat untuk mengajak mereka kembali dengan pendekatan yang lebih personal. Tawarkan promo atau voucher dengan batas waktu tertentu agar muncul rasa urgensi dan keinginan untuk segera melakukan pembelian.",
+    1: "<b>Retensi Prioritas (VIP):</b> Pelanggan ini termasuk kategori bernilai tinggi bagi bisnis Anda. Pertahankan loyalitas mereka dengan memberikan pengalaman eksklusif, seperti akses lebih awal ke produk terbaru, layanan khusus, atau reward istimewa sebagai bentuk apresiasi.",
+    2: "<b>Peluang Pertumbuhan:</b> Pelanggan ini menunjukkan potensi untuk berkembang menjadi pelanggan setia. Anda dapat meningkatkan nilai transaksi mereka dengan menawarkan produk pelengkap, paket bundling yang relevan, atau program loyalitas yang memberikan keuntungan jangka panjang."
 }
 
 # --- FUNGSI BANTUAN VISUAL UNTUK PLOTLY ---
