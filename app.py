@@ -309,7 +309,6 @@ cluster_names = {
     2: "Medium / Potential"
 }
 recommendation_text = {
-    recommendation_text = {
     0: "🔍 **Strategi Reaktivasi:** Pelanggan ini sudah lama tidak aktif. Segera picu minat mereka kembali dengan kampanye 'Win-Back' personal. Berikan voucher diskon dengan urgensi tinggi (limited time) untuk mendorong transaksi instan.",
     1: "💎 **Retensi Prioritas (VIP):** Ini adalah aset berharga bisnis Anda. Fokus pada eksklusivitas dengan memberikan akses awal (Early Access) ke produk baru, layanan prioritas, dan reward khusus yang tidak dimiliki pelanggan lain.",
     2: "📈 **Peluang Pertumbuhan:** Pelanggan ini memiliki potensi besar untuk menjadi loyal. Dorong nilai transaksi (Average Order Value) mereka melalui teknik Upselling, penawaran paket bundling menarik, atau insentif poin loyalitas."
