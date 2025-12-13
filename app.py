@@ -120,22 +120,17 @@ st.markdown(f"""
 # 3. SIDEBAR NAVIGATION
 # ======================
 with st.sidebar:
-    st.markdown('<div style="margin-bottom: 30px; text-align: center;">', unsafe_allow_html=True)
+    st.markdown('<div style="margin-bottom: 20px;">', unsafe_allow_html=True)
     # Pastikan file alllogo.png ada di folder image/
     try:
-        # Menambahkan sedikit shadow pada logo agar pop-up
-        st.markdown(f"""
-            <img src="app/static/image/alllogo.png" width="200" style="filter: drop-shadow(0px 4px 4px rgba(0,0,0,0.2));">
-        """, unsafe_allow_html=True)
-        # NOTE UNTUK PENGGUNA: Jika baris di atas error (karena path), gunakan st.image biasa di bawah ini:
-        # st.image("image/alllogo.png", width=220)
+        st.image("image/alllogo.png", width=220) 
     except:
-        st.caption("Logo not found", unsafe_allow_html=True)
+        st.caption("Logo not found")
     st.markdown('</div>', unsafe_allow_html=True)
 
     st.markdown("### 🧭 Main Menu")
 
-    # Navigasi menggunakan Radio Button (Terpisah & Jelas)
+       # Navigasi menggunakan Radio Button (Terpisah & Jelas)
     page = st.sidebar.radio(
         "",
         ["Executive Overview", "Dashboard RFM", "Prediksi & Insight"],
@@ -150,7 +145,7 @@ with st.sidebar:
             Customer Segmentation System
         </div>
     """, unsafe_allow_html=True)
-
+ 
 # ======================
 # 4. LOAD DATA & MODELS
 # ======================
