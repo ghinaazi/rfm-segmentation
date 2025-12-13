@@ -72,8 +72,11 @@ st.markdown("""
 # ======================
 with st.sidebar:
     st.markdown('<div style="margin-bottom: 20px;">', unsafe_allow_html=True)
-    # Ganti path gambar sesuai folder kamu
-    st.image("image/alllogo.png", width=220) 
+    # Pastikan file alllogo.png ada di folder image/
+    try:
+        st.image("image/alllogo.png", width=220) 
+    except:
+        st.caption("Logo not found")
     st.markdown('</div>', unsafe_allow_html=True)
 
     st.markdown("### 🧭 Main Menu")
@@ -97,7 +100,8 @@ try:
     if "first_order_date" in df.columns:
         df["first_order_date"] = pd.to_datetime(df["first_order_date"])
 except Exception as e:
-    st.error(f"Error loading data: {e}")
+    st.error(f"Terjadi kesalahan saat memuat data: {e}")
+    st.warning("Pastikan file 'data_with_cluster.xlsx' dan 'flo_data_20k.csv' ada di dalam folder 'dataset' di GitHub Anda.")
     st.stop()
 
 # Load Models
@@ -106,7 +110,7 @@ try:
     pca = pickle.load(open("model/pca.pkl", "rb"))
     kmeans = pickle.load(open("model/kmeans.pkl", "rb"))
 except Exception:
-    st.warning("Model belum ditemukan. Fitur prediksi mungkin tidak berjalan.")
+    st.warning("⚠️ Model (scaler.pkl, pca.pkl, kmeans.pkl) belum ditemukan di folder 'model'. Fitur prediksi tidak akan berjalan.")
 
 # Mapping Nama Cluster
 cluster_names = {
@@ -115,26 +119,25 @@ cluster_names = {
     2: "Medium / Potential"
 }
 recommendation_text = {
-    0: "🔍 **Reaktivasi:** Kirim voucher 'We Miss You', diskon urgensi tinggi.",
-    1: "💎 **Retensi VIP:** Reward eksklusif, early access, layanan prioritas.",
-    2: "📈 **Upselling:** Tawarkan bundling produk, program poin loyalty."
+    0: "🔍 *Reaktivasi:* Kirim voucher 'We Miss You', diskon urgensi tinggi.",
+    1: "💎 *Retensi VIP:* Reward eksklusif, early access, layanan prioritas.",
+    2: "📈 *Upselling:* Tawarkan bundling produk, program poin loyalty."
 }
 
 
 # ============================================================
-# PAGE 1: EXECUTIVE OVERVIEW (YANG DIMINTA LEBIH MAHAL & RAMAI)
+# PAGE 1: EXECUTIVE OVERVIEW 
 # ============================================================
 if page == "Executive Overview":
     
     # --- HERO SECTION ---
     st.title("💎 Customer Intelligence Hub")
     st.markdown("### Transformation from Mass Marketing to Personalized Strategy")
-    st.write("Selamat datang di panel analitik pelanggan. Platform ini menggunakan **Machine Learning** untuk mengelompokkan pelanggan berdasarkan perilaku belanja mereka (RFM Analysis).")
+    st.write("Selamat datang di panel analitik pelanggan. Platform ini menggunakan *Machine Learning* untuk mengelompokkan pelanggan berdasarkan perilaku belanja mereka (RFM Analysis).")
     
     st.markdown("---")
 
-    # --- TOP LEVEL METRICS (SUPAYA GAK SEPI) ---
-    # Menampilkan ringkasan data langsung di depan
+    # --- TOP LEVEL METRICS ---
     m1, m2, m3, m4 = st.columns(4)
     
     with m1:
@@ -165,13 +168,12 @@ if page == "Executive Overview":
         st.markdown(f"""
         <div class="premium-card">
             <div class="metric-label">Total Revenue</div>
-            <div class="metric-value">£{df['Monetary'].sum()/1000000:.1f}M</div>
+            <div class="metric-value">₺{df['Monetary'].sum()/1000000:.1f}M</div>
         </div>
         """, unsafe_allow_html=True)
 
     # --- TABS FOR ORGANIZED CONTENT ---
-    # Menggunakan Tabs agar halaman terlihat rapi tapi padat informasi
-    tab1, tab2, tab3 = st.tabs(["🎯 Business Objectives", "📂 Dataset Explorer", "⚙️ Methodology"])
+    tab1, tab2, tab3 = st.tabs(["🎯 Business Objectives", "📂 Dataset Explorer", "📈 Visual Overview"])
 
     with tab1:
         st.subheader("Mengapa Segmentasi Itu Penting?")
@@ -179,51 +181,214 @@ if page == "Executive Overview":
         with c1:
             st.info("**1. Efisiensi Biaya**\n\nHentikan promosi massal yang mahal. Fokuskan budget hanya pada pelanggan yang berpotensi tinggi.")
         with c2:
-            st.warning("**2. Personalisasi**\n\nPelanggan loyal butuh *reward*, pelanggan pasif butuh *diskon*. Berikan apa yang mereka butuhkan.")
+            st.warning("**2. Personalisasi**\n\nPelanggan loyal butuh *reward*, pelanggan pasif butuh diskon. Berikan apa yang mereka butuhkan.")
         with c3:
             st.success("**3. Tingkatkan ROI**\n\nStrategi yang tepat sasaran terbukti meningkatkan konversi penjualan hingga 2-3x lipat.")
             
         st.markdown("#### 🔑 The RFM Concept")
-        st.image("https://miro.medium.com/v2/resize:fit:1400/1*9N-JdC6a0eF5d3Vz-1u1pw.png", caption="Recency, Frequency, Monetary Model", width=600)
+        try:
+            st.image("image/rfmanalysisdiagram.png", caption="Recency, Frequency, Monetary Model Concept", width=600)
+        except Exception:
+             st.warning("Gambar 'rfmanalysisdiagram.png' tidak ditemukan. Cek folder image.")
 
     with tab2:
         st.subheader("Data Source Overview")
-        st.markdown("Dataset ini menggabungkan perilaku transaksi dari **OmniChannel** (Aplikasi, Website, dan Toko Fisik).")
+        st.markdown("Dataset ini menggabungkan perilaku transaksi dari *OmniChannel* (Aplikasi, Website, dan Toko Fisik).")
         
-        # Interactive DataFrame dengan Column Config (Biar terlihat tabel mahal)
+        # Interactive DataFrame
         st.dataframe(
             df2.head(10),
             use_container_width=True,
             column_config={
                 "master_id": "Customer ID",
                 "first_order_date": st.column_config.DateColumn("First Join"),
-                "customer_value_total_ever_online": st.column_config.NumberColumn("Online Spend", format="£ %.2f"),
-                "customer_value_total_ever_offline": st.column_config.NumberColumn("Offline Spend", format="£ %.2f")
+                "customer_value_total_ever_online": st.column_config.NumberColumn("Online Spend", format="₺ %.2f"),
+                "customer_value_total_ever_offline": st.column_config.NumberColumn("Offline Spend", format="₺ %.2f")
             }
         )
         
         with st.expander("Lihat Metadata Lengkap (Kamus Data)"):
              metadata = {
-                "Variabel": ["master_id", "order_channel", "Recency", "Frequency", "Monetary"],
-                "Deskripsi": ["ID Unik Pelanggan", "Platform transaksi", "Jarak hari transaksi terakhir", "Total frekuensi belanja", "Total uang yang dikeluarkan"]
+                "Variabel": [
+                    "master_id",
+                    "order_channel",
+                    "last_order_channel",
+                    "first_order_date",
+                    "last_order_date",
+                    "last_order_date_online",
+                    "last_order_date_offline",
+                    "order_num_total_ever_online",
+                    "order_num_total_ever_offline",
+                    "customer_value_total_ever_offline",
+                    "customer_value_total_ever_online",
+                    "interested_in_categories_12"
+                ],
+                "Deskripsi": [
+                    "Unique client number",
+                    "Channel belanja yang digunakan",
+                    "Channel pembelian terakhir",
+                    "Tanggal pembelian pertama",
+                    "Tanggal pembelian terakhir",
+                    "Tanggal pembelian online terakhir",
+                    "Tanggal pembelian offline terakhir",
+                    "Total transaksi online",
+                    "Total transaksi offline",
+                    "Total nilai transaksi offline",
+                    "Total nilai transaksi online",
+                    "Kategori belanja dalam 12 bulan terakhir"
+                ]
             }
              st.table(pd.DataFrame(metadata))
 
+    # --- BAGIAN VISUAL OVERVIEW (COMPLETELY UPDATED) ---
     with tab3:
-        st.subheader("Bagaimana AI Bekerja?")
-        col_text, col_flow = st.columns([1, 1])
+        st.subheader("Visualisasi Data Utama")
         
-        with col_text:
-            st.markdown("""
-            1.  **Data Cleaning:** Membersihkan data outlier dan missing values.
-            2.  **Normalization:** Mengubah skala data agar seimbang (Standard Scaler).
-            3.  **Dimensionality Reduction:** Menggunakan PCA (Principal Component Analysis) untuk menyederhanakan fitur.
-            4.  **Clustering:** Algoritma **K-Means** mengelompokkan pelanggan berdasarkan kemiripan pola belanja.
-            """)
+        # 1. PENGATUR TANGGAL (DATE FILTER)
+        st.markdown("##### 🗓️ Filter Periode Data")
         
-        with col_flow:
-            st.markdown("```mermaid\ngraph LR\nA[Raw Data] --> B(Cleaning)\nB --> C{K-Means AI}\nC --> D[Loyal]\nC --> E[Potential]\nC --> F[Inactive]\n```", unsafe_allow_html=True)
-            st.caption("*Flowchart sederhana proses machine learning*")
+        # Ambil min dan max tanggal dari data untuk default value
+        min_date_available = df['first_order_date'].min().date()
+        max_date_available = df['first_order_date'].max().date()
+        
+        col_filter1, col_filter2 = st.columns(2)
+        
+        with col_filter1:
+            start_date = st.date_input(
+                "Mulai Tanggal", 
+                value=min_date_available, 
+                min_value=min_date_available, 
+                max_value=max_date_available
+            )
+        
+        with col_filter2:
+            end_date = st.date_input(
+                "Sampai Tanggal", 
+                value=max_date_available, 
+                min_value=min_date_available, 
+                max_value=max_date_available
+            )
+            
+        # 2. FILTER DATA BERDASARKAN TANGGAL
+        mask = (df['first_order_date'].dt.date >= start_date) & (df['first_order_date'].dt.date <= end_date)
+        df_filtered = df.loc[mask]
+        
+        st.divider()
+
+        if df_filtered.empty:
+            st.warning("⚠️ Tidak ada data transaksi pada rentang tanggal yang dipilih.")
+        else:
+            # === ROW 1: GROWTH & CHANNEL PIE ===
+            col_viz1, col_viz2 = st.columns(2)
+            
+            # a. Line Chart Bulanan
+            with col_viz1:
+                 st.markdown("#### 📈 Pertumbuhan Pelanggan") 
+                 
+                 df_trend = df_filtered.copy()
+                 if 'first_order_date' in df_trend.columns:
+                     df_trend = df_trend.set_index('first_order_date')
+                     monthly_counts = df_trend.resample('MS').size().reset_index(name='count')
+                     
+                     fig_line = px.line(
+                        monthly_counts,
+                        x='first_order_date',
+                        y='count',
+                        markers=True,
+                        labels={'first_order_date': 'Bulan', 'count': 'Jumlah Pelanggan Baru'},
+                        color_discrete_sequence=["#EF8505"]
+                     )
+                     
+                     fig_line.update_layout(
+                         title_text="",
+                         margin=dict(t=20),
+                         xaxis_title="Periode",
+                         yaxis_title="Total Customer"
+                     )
+                     st.plotly_chart(fig_line, use_container_width=True)
+                 else:
+                     st.error("Kolom 'first_order_date' tidak ditemukan.")
+
+            # b. Pie Chart Order Channel
+            with col_viz2:
+                 st.markdown("#### 🥧 Distribusi Channel")
+                 fig_pie = px.pie(
+                    df_filtered, 
+                    names='order_channel', 
+                    color='order_channel', 
+                    color_discrete_sequence=px.colors.sequential.Oranges_r, 
+                    hole=0.4
+                 )
+                 st.plotly_chart(fig_pie, use_container_width=True)
+            
+            st.divider()
+            
+            # === ROW 2: ORDER VOLUME & REVENUE (COMPARED) ===
+            col_viz3, col_viz4 = st.columns(2)
+            
+            # c. Bar Chart: Volume Order (Online vs Offline)
+            with col_viz3:
+                st.markdown("#### 📦 Total Volume Transaksi")
+                
+                total_online = df_filtered['order_num_total_ever_online'].sum()
+                total_offline = df_filtered['order_num_total_ever_offline'].sum()
+                
+                df_vol = pd.DataFrame({
+                    'Channel': ['Online Order', 'Offline Order'],
+                    'Total Order': [total_online, total_offline]
+                })
+                
+                fig_vol = px.bar(
+                    df_vol, x='Total Order', y='Channel', orientation='h',
+                    text='Total Order', color='Channel',
+                    color_discrete_map={'Online Order': '#EF8505', 'Offline Order': '#323232'}
+                )
+                fig_vol.update_layout(xaxis_title="Jumlah Transaksi", yaxis_title="", showlegend=False)
+                st.plotly_chart(fig_vol, use_container_width=True)
+            
+            # d. Bar Chart: Revenue (Online vs Offline)
+            with col_viz4:
+                st.markdown("#### 💰 Total Revenue")
+                
+                # Agregasi Sum
+                rev_online = df_filtered['customer_value_total_ever_online'].sum()
+                rev_offline = df_filtered['customer_value_total_ever_offline'].sum()
+                
+                df_rev = pd.DataFrame({
+                    'Source': ['Online Revenue', 'Offline Revenue'],
+                    'Revenue': [rev_online, rev_offline]
+                })
+                
+                fig_rev = px.bar(
+                    df_rev, x='Revenue', y='Source', orientation='h',
+                    text='Revenue', color='Source',
+                    color_discrete_map={'Online Revenue': '#EF8505', 'Offline Revenue': '#323232'}
+                )
+                
+                # Format text Lira (₺)
+                fig_rev.update_traces(texttemplate='₺%{text:.2s}', textposition='inside')
+                
+                fig_rev.update_layout(xaxis_title="Total Revenue (₺)", yaxis_title="", showlegend=False)
+                st.plotly_chart(fig_rev, use_container_width=True)
+
+            # === ROW 3: CATEGORIES (MOVED DOWN FOR BETTER VIEW) ===
+            st.divider()
+            st.markdown("#### 🛍️ Top Kategori Peminatan")
+            
+            if 'interested_in_categories_12' in df_filtered.columns:
+                cat_counts = df_filtered['interested_in_categories_12'].value_counts().reset_index()
+                cat_counts.columns = ['Category', 'Count']
+                cat_counts = cat_counts.head(10).sort_values(by='Count', ascending=True)
+                
+                fig_bar = px.bar(
+                    cat_counts, x='Count', y='Category', orientation='h',
+                    text='Count', color='Count',
+                    color_continuous_scale=px.colors.sequential.Oranges
+                )
+                fig_bar.update_layout(xaxis_title="Jumlah Transaksi", yaxis_title="", showlegend=False)
+                st.plotly_chart(fig_bar, use_container_width=True)
+            else:
+                st.warning("⚠️ Kolom kategori tidak ditemukan.")
 
 
 # ============================================================
@@ -239,7 +404,7 @@ elif page == "Dashboard RFM":
     
     k1, k2, k3 = st.columns(3)
     k1.metric("Active Customers", f"{total_cust:,}", "User Base")
-    k2.metric("Average Spending", f"£ {avg_monetary:,.0f}", "per User")
+    k2.metric("Average Spending", f"₺ {avg_monetary:,.0f}", "per User")
     k3.metric("Clustering Confidence", "Silhouette 0.65", "High Quality")
 
     st.markdown("---")
@@ -301,34 +466,43 @@ elif page == "Prediksi & Insight":
             freq = st.number_input("Frequency (Total Transaksi)", 1, 100, 5)
             mon = st.number_input("Monetary (Total Belanja)", 0, 100000000, 500000)
             
+            st.write("")
             run_btn = st.button("Analisis Sekarang", type="primary", use_container_width=True)
 
     with col_res:
         if run_btn:
             # Prediksi
-            X = [[recency, freq, mon]]
-            X_scaled = scaler.transform(X)
-            X_pca = pca.transform(X_scaled)
-            pred = kmeans.predict(X_pca)[0]
-            
-            label = cluster_names[pred]
-            desc = recommendation_text[pred]
-            
-            # Tampilan Hasil Mahal (HTML Injection)
-            st.markdown(f"""
-            <div class="premium-card" style="border-left: 10px solid #EF8505;">
-                <h3 style="margin:0; color:#EF8505;">Hasil Analisis AI</h3>
-                <h1 style="font-size: 40px; margin: 10px 0;">{label}</h1>
-                <hr>
-                <p style="font-size:18px;">{desc}</p>
-            </div>
-            """, unsafe_allow_html=True)
-            
-            # Show Metrics Recency calculated
-            c_a, c_b = st.columns(2)
-            c_a.metric("Recency (Hari)", f"{recency} Hari")
-            c_b.metric("Potential Value", "High" if mon > df['Monetary'].mean() else "Standard")
+            try:
+                X = [[recency, freq, mon]]
+                X_scaled = scaler.transform(X)
+                X_pca = pca.transform(X_scaled)
+                pred = kmeans.predict(X_pca)[0]
+                
+                label = cluster_names[pred]
+                desc = recommendation_text[pred]
+                
+                # Tampilan Hasil Mahal (HTML Injection)
+                st.markdown(f"""
+                <div class="premium-card" style="border-left: 10px solid #EF8505;">
+                    <h3 style="margin:0; color:#EF8505;">Hasil Analisis AI</h3>
+                    <h1 style="font-size: 40px; margin: 10px 0;">{label}</h1>
+                    <hr>
+                    <p style="font-size:18px;">{desc}</p>
+                </div>
+                """, unsafe_allow_html=True)
+                
+                # Show Metrics Recency calculated
+                c_a, c_b = st.columns(2)
+                c_a.metric("Recency (Hari)", f"{recency} Hari")
+                # Logic sederhana untuk menentukan potential value
+                mean_monetary = df['Monetary'].mean() if not df.empty else 0
+                c_b.metric("Potential Value", "High" if mon > mean_monetary else "Standard")
+            except Exception as e:
+                st.error(f"Terjadi kesalahan saat prediksi: {e}. Cek apakah model sudah dimuat dengan benar.")
             
         else:
             st.info("👈 Masukkan data di panel kiri untuk melihat hasil prediksi.")
-            st.image("image/alllogo.png", width=100) # Placeholder image
+            try:
+                st.image("image/alllogo.png", width=100) # Placeholder image
+            except:
+                pass
