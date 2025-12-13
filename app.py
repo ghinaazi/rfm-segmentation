@@ -518,7 +518,7 @@ elif page == "Dashboard RFM":
             
             # Visualisasi Bar Chart Horizontal
             fig_cat = px.bar(
-                cat_counts.head(10).sort_values(by="Count", ascending=True), # Top 10
+                cat_counts.head(5).sort_values(by="Count", ascending=True), # Top 10
                 x="Count",
                 y="Category",
                 orientation='h',
