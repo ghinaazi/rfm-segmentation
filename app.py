@@ -27,7 +27,6 @@ st.set_page_config(
 # ======================
 st.markdown("""
     <style>
-
         /* ====================== */
         /* CARD UNTUK KPI METRIC  */
         /* ====================== */
@@ -55,7 +54,6 @@ st.markdown("""
 
 st.markdown("""
 <style>
-
     /* Hilangkan jarak antar elemen sidebar */
     [data-testid="stSidebar"] .element-container {
         padding: 0px !important;
@@ -67,7 +65,6 @@ st.markdown("""
         margin-bottom: 0px !important;
         margin-top: 0px !important;
     }
-
 </style>
 """, unsafe_allow_html=True)
 
@@ -77,9 +74,10 @@ with st.sidebar:
     st.markdown('</div>', unsafe_allow_html=True)
 
 st.sidebar.title("📘 Navigation")
+# 1. MENGUBAH NAMA MENU DI SINI
 page = st.sidebar.selectbox(
     "Pilih Halaman",
-    ["Overview", "Dashboard RFM", "Cluster Prediction"], # Opsi Baru Ditambahkan
+    ["Overview", "Cluster RFM", "Cluster Prediction"], 
     index=0
 )
 
@@ -92,7 +90,7 @@ df2 = pd.read_csv("dataset/flo_data_20k.csv")
 if "first_order_date" in df.columns:
     df["first_order_date"] = pd.to_datetime(df["first_order_date"])
 
-# Definisi Cluster Names (Ditaruh sini agar bisa dibaca Dashboard & Prediksi)
+# Definisi Cluster Names
 cluster_names = {
     0: "Low Value Inactive Customer",
     1: "High Value Customer",
@@ -112,6 +110,31 @@ if page == "Overview":
     st.write("""
     Perubahan perilaku pasar di era digital menuntut strategi pemasaran yang lebih cerdas dan tepat sasaran. Namun, banyak perusahaan masih menggunakan promosi massal yang kurang relevan dengan karakteristik pelanggan, sehingga menimbulkan inefisiensi biaya dan rendahnya tingkat konversi. Untuk mengatasinya, diperlukan peralihan menuju pengambilan keputusan berbasis data melalui segmentasi pelanggan yang lebih actionable. Metode RFM (Recency, Frequency, Monetary) menjadi solusi efektif karena mampu mengukur nilai pelanggan secara kuantitatif. Dengan dukungan algoritma Machine Learning dan dashboard visualisasi, analisis pelanggan dapat dilakukan lebih cepat dan akurat untuk mendukung strategi personalized marketing.
     """)
+
+    # 2. MENAMBAHKAN LINE CHART BULANAN DI SINI
+    st.markdown("---")
+    st.subheader("📈 Tren Pertumbuhan Pelanggan (Bulanan)")
+    
+    # Proses Data: Resample ke Bulanan (Month Start)
+    # Kita menggunakan copy dataframe agar tidak merusak df utama
+    df_trend = df.copy()
+    df_trend = df_trend.set_index('first_order_date')
+    monthly_counts = df_trend.resample('MS').size().reset_index(name='count')
+    
+    # Membuat Line Chart
+    fig_line = px.line(
+        monthly_counts,
+        x='first_order_date',
+        y='count',
+        markers=True,
+        title="Jumlah Pelanggan Baru per Bulan",
+        labels={'first_order_date': 'Bulan', 'count': 'Jumlah Pelanggan'},
+        color_discrete_sequence=["#EF8505"]
+    )
+    fig_line.update_layout(xaxis_title="", yaxis_title="Jumlah Order")
+    st.plotly_chart(fig_line, use_container_width=True)
+    st.markdown("---")
+
 
     st.header("📂 Dataset")
     st.write("""
@@ -157,12 +180,13 @@ if page == "Overview":
     metadata_df = pd.DataFrame(metadata)
     st.dataframe(metadata_df, use_container_width=True)
     
-    st.info("Gunakan menu di sidebar untuk membuka **Dashboard RFM** atau **Cluster Prediction**.")
+    st.info("Gunakan menu di sidebar untuk membuka **Cluster RFM** atau **Cluster Prediction**.")
 
 # ============================================================
-# ===============  HALAMAN 2 — DASHBOARD RFM ==================
+# ===============  HALAMAN 2 — CLUSTER RFM ==================
 # ============================================================
-elif page == "Dashboard RFM":
+# 3. UBAH KONDISI HALAMAN
+elif page == "Cluster RFM":
 
     # ======================
     # TITLE
@@ -195,9 +219,11 @@ elif page == "Dashboard RFM":
             st.metric("Total Frequency", f"{total_frequency:,}")
 
     # ======================
-    # PIE + BAR
+    # PIE CHART (BAR CHART SUDAH DIHAPUS DARI SINI)
     # ======================
-    col1, col2 = st.columns(2)
+    st.write("") # Spacer
+    
+    col1, col2 = st.columns([1, 1]) # Menggunakan proporsi biar rapi
 
     with col1:
         with st.container(border=True):
@@ -212,20 +238,11 @@ elif page == "Dashboard RFM":
                 color_discrete_sequence= ["#E05F00", "#FAAD00", "#FFC746", "#FFE169"]
             )
             st.plotly_chart(fig_pie, use_container_width=True)
-
+    
     with col2:
-        with st.container(border=True):
-            st.markdown(
-                "<h3 style='text-align: center;'>Order Count by First Order Date</h3>",
-                unsafe_allow_html=True
-            )
-            fig_bar = px.bar(
-                df.groupby("first_order_date").size().reset_index(name="count"),
-                x="first_order_date",
-                y="count",
-                color_discrete_sequence=["#323232"]
-            )
-            st.plotly_chart(fig_bar, use_container_width=True)
+         # Bisa diisi grafik lain jika nanti ada, sementara dikosongkan atau diisi info
+         st.info("Grafik Pertumbuhan Pelanggan telah dipindahkan ke menu **Overview**.")
+
 
     # ======================
     # DISTRIBUSI RFM PER CLUSTER
@@ -356,7 +373,6 @@ elif page == "Cluster Prediction":
     # ======================
     # LOAD MODELS
     # ======================
-    # Load model hanya saat halaman ini dibuka agar lebih efisien
     try:
         scaler = pickle.load(open("model/scaler.pkl", "rb"))
         pca = pickle.load(open("model/pca.pkl", "rb"))
@@ -396,7 +412,7 @@ elif page == "Cluster Prediction":
             freq = st.number_input("Frequency (jumlah transaksi)", min_value=0)
             mon = st.number_input("Monetary (total pembelian)", min_value=0)
 
-            st.write("") # Spacer
+            st.write("") 
             btn = st.button("Prediksi Cluster", use_container_width=True)
 
     with right:
@@ -407,17 +423,25 @@ elif page == "Cluster Prediction":
 
         with st.container(border=True):
             if btn and recency is not None:
-                # Proses Prediksi
                 X_scaled = scaler.transform([[recency, freq, mon]])
                 X_pca = pca.transform(X_scaled)
                 cluster_pred = kmeans.predict(X_pca)[0]
 
-                cluster_name = cluster_names[cluster_pred]
-                recommendation = cluster_reco[cluster_pred]
+                # --- ERROR HANDLING ---
+                if cluster_pred in cluster_names:
+                    cluster_name = cluster_names[cluster_pred]
+                    if cluster_pred in cluster_reco:
+                        recommendation = cluster_reco[cluster_pred]
+                    else:
+                        recommendation = "Belum ada rekomendasi khusus."
+                else:
+                    cluster_name = f"Cluster {cluster_pred} (Tidak Terdefinisi)"
+                    recommendation = "Cluster ini terdeteksi oleh model tapi belum diberi nama di kodingan."
 
                 # ---- OUTPUT ----
                 st.success(f"Cluster Prediksi: **{cluster_name}**")
                 st.info(f"💡 **Rekomendasi:** {recommendation}")
+                st.caption(f"Debug Info: Model Output = {cluster_pred}")
             
             elif btn and recency is None:
                 st.warning("Perbaiki tanggal terlebih dahulu.")
