@@ -185,9 +185,9 @@ if page == "Executive Overview":
             
         st.markdown("#### 🔑 The RFM Concept")
         try:
-            st.image("image/rfmanalysisdiagram.png", caption="Recency, Frequency, Monetary Model Concept", width=600)
+            st.image("image/rfmanalysisdiagram.jpeg", caption="Recency, Frequency, Monetary Model Concept", width=600)
         except Exception:
-             st.warning("Gambar 'rfmanalysisdiagram.png' tidak ditemukan. Cek folder image.")
+             st.warning("Gambar 'rfmanalysisdiagram.jpeg' tidak ditemukan. Cek folder image.")
 
     with tab2:
         st.subheader("Data Source Overview")
