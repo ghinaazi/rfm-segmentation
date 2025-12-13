@@ -36,7 +36,7 @@ st.markdown("""
             background-color: #EF8505  !important; /* Kuning muda */
         }
 
-	/* Background utama */
+    /* Background utama */
         [data-testid="stAppViewContainer"] {
             background-color: #FFFFFF !important; /* Kuning muda */
         }
@@ -79,12 +79,12 @@ with st.sidebar:
 st.sidebar.title("📘 Navigation")
 page = st.sidebar.selectbox(
     "Pilih Halaman",
-    ["Overview", "Dashboard RFM"],
+    ["Overview", "Dashboard RFM", "Cluster Prediction"], # Opsi Baru Ditambahkan
     index=0
 )
 
 # ======================
-# LOAD DATA (DIPAKAI DI 2 HALAMAN)
+# LOAD DATA (DIPAKAI DI SEMUA HALAMAN)
 # ======================
 df = pd.read_excel("dataset/data_with_cluster.xlsx")
 df2 = pd.read_csv("dataset/flo_data_20k.csv")
@@ -92,6 +92,12 @@ df2 = pd.read_csv("dataset/flo_data_20k.csv")
 if "first_order_date" in df.columns:
     df["first_order_date"] = pd.to_datetime(df["first_order_date"])
 
+# Definisi Cluster Names (Ditaruh sini agar bisa dibaca Dashboard & Prediksi)
+cluster_names = {
+    0: "Low Value Inactive Customer",
+    1: "High Value Customer",
+    2: "Medium Customer"
+}
 
 # ============================================================
 # ===============  HALAMAN 1 — OVERVIEW  ======================
@@ -118,40 +124,40 @@ if page == "Overview":
     st.subheader("🧾 Metadata Dataset")
 
     metadata = {
-	    "Variabel": [
-	        "master_id",
-	        "order_channel",
-	        "last_order_channel",
-	        "first_order_date",
-	        "last_order_date",
-	        "last_order_date_online",
-	        "last_order_date_offline",
-	        "order_num_total_ever_online",
-	        "order_num_total_ever_offline",
-	        "customer_value_total_ever_offline",
-	        "customer_value_total_ever_online",
-	        "interested_in_categories_12"
-	    ],
-	    "Deskripsi": [
-	        "Unique client number",
-	        "Channel belanja yang digunakan",
-	        "Channel pembelian terakhir",
-	        "Tanggal pembelian pertama",
-	        "Tanggal pembelian terakhir",
-	        "Tanggal pembelian online terakhir",
-	        "Tanggal pembelian offline terakhir",
-	        "Total transaksi online",
-	        "Total transaksi offline",
-	        "Total nilai transaksi offline",
-	        "Total nilai transaksi online",
-	        "Kategori belanja dalam 12 bulan terakhir"
-	    ]
+        "Variabel": [
+            "master_id",
+            "order_channel",
+            "last_order_channel",
+            "first_order_date",
+            "last_order_date",
+            "last_order_date_online",
+            "last_order_date_offline",
+            "order_num_total_ever_online",
+            "order_num_total_ever_offline",
+            "customer_value_total_ever_offline",
+            "customer_value_total_ever_online",
+            "interested_in_categories_12"
+        ],
+        "Deskripsi": [
+            "Unique client number",
+            "Channel belanja yang digunakan",
+            "Channel pembelian terakhir",
+            "Tanggal pembelian pertama",
+            "Tanggal pembelian terakhir",
+            "Tanggal pembelian online terakhir",
+            "Tanggal pembelian offline terakhir",
+            "Total transaksi online",
+            "Total transaksi offline",
+            "Total nilai transaksi offline",
+            "Total nilai transaksi online",
+            "Kategori belanja dalam 12 bulan terakhir"
+        ]
     }
-	
+    
     metadata_df = pd.DataFrame(metadata)
     st.dataframe(metadata_df, use_container_width=True)
-	
-    st.info("Gunakan menu di sidebar untuk membuka **Dashboard RFM**.")
+    
+    st.info("Gunakan menu di sidebar untuk membuka **Dashboard RFM** atau **Cluster Prediction**.")
 
 # ============================================================
 # ===============  HALAMAN 2 — DASHBOARD RFM ==================
@@ -165,19 +171,6 @@ elif page == "Dashboard RFM":
     "<h1 style='text-align: center;'>📊 Customer Segmentation Dashboard</h1>",
     unsafe_allow_html=True
 )
-
-    # ======================
-    # LOAD MODELS
-    # ======================
-    scaler = pickle.load(open("model/scaler.pkl", "rb"))
-    pca = pickle.load(open("model/pca.pkl", "rb"))
-    kmeans = pickle.load(open("model/kmeans.pkl", "rb"))
-
-    cluster_reco = {
-        0: "Prioritas Marketing",
-        1: "Loyal Customers",
-        2: "Hibernating",
-    }
 
     # ======================
     # KPI CARDS
@@ -245,12 +238,7 @@ elif page == "Dashboard RFM":
 
     colA, colB, colC = st.columns(3)
 
-    cluster_names = {
-    0: "Low Value Inactive Customer",
-    1: "High Value Customer",
-    2: "Medium Customer"
-	}
-
+    # Mapping nama cluster ke dataframe
     df["Cluster_Name"] = df["Cluster"].map(cluster_names)
 
     with colA:
@@ -315,11 +303,11 @@ elif page == "Dashboard RFM":
             fig_m.update_layout(legend_title_text="")
             fig_m.update_xaxes(title_text="")
             st.plotly_chart(fig_m, use_container_width=True)
-	
+    
     # ======================
     # CLUSTER DISTRIBUTION + CHANNEL DISTRIBUTION
     # ======================
-   
+    
     st.markdown(
         "<h3 style='text-align: center;'>Distribusi Cluster & Order Channel</h3>",
         unsafe_allow_html=True
@@ -352,19 +340,41 @@ elif page == "Dashboard RFM":
         )
             st.plotly_chart(fig_channel, use_container_width=True)
 
-    
+
+# ============================================================
+# ===============  HALAMAN 3 — CLUSTER PREDICTION ============
+# ============================================================
+elif page == "Cluster Prediction":
+
+    st.markdown(
+    "<h1 style='text-align: center;'>🤖 Cluster Prediction</h1>",
+    unsafe_allow_html=True
+    )
+
+    st.write("Masukkan data pelanggan di bawah ini untuk memprediksi kategori (Cluster) pelanggan dan mendapatkan rekomendasi strategi marketing.")
+
+    # ======================
+    # LOAD MODELS
+    # ======================
+    # Load model hanya saat halaman ini dibuka agar lebih efisien
+    try:
+        scaler = pickle.load(open("model/scaler.pkl", "rb"))
+        pca = pickle.load(open("model/pca.pkl", "rb"))
+        kmeans = pickle.load(open("model/kmeans.pkl", "rb"))
+    except FileNotFoundError:
+        st.error("Model file not found. Pastikan folder 'model' dan isinya sudah ada di GitHub.")
+        st.stop()
+
+    cluster_reco = {
+        0: "Prioritas Marketing: Reaktivasi agresif melalui promosi besar atau diskon signifikan, pengiriman pesan win-back seperti “Kami kangen kamu”, serta pemberian voucher.",
+        1: "Loyal Customers: Retensi jangka panjang dengan program loyalitas premium, pelayanan eksklusif, dan reward khusus seperti cashback VIP.",
+        2: "Hibernating: Menjaga engagement melalui pengiriman reminder berkala, promo ringan seperti diskon kecil atau gratis ongkir."
+    }
 
     # ======================
     # FORM PREDIKSI
     # ======================
-
     
-    cluster_reco = {
-    	0: "Reaktivasi agresif melalui promosi besar atau diskon signifikan, pengiriman pesan win-back seperti “Kami kangen kamu”, serta pemberian voucher dengan masa berlaku singkat. Survei singkat juga bisa dilakukan untuk memahami alasan mereka berhenti bertransaksi.",
-    	1: "Retensi jangka panjang dengan program loyalitas premium, pelayanan eksklusif, dan reward khusus seperti cashback VIP, poin ekstra, atau bundle premium. Selain itu, mengajak mereka berpartisipasi dalam referral program dapat meningkatkan loyalitas sekaligus akuisisi pelanggan baru.",
-    	2: "Menjaga engagement melalui pengiriman reminder berkala, promo ringan seperti diskon kecil atau gratis ongkir, serta program loyalitas atau pemberian poin tambahan. Tujuannya adalah agar mereka tetap aktif dan tidak turun menjadi pelanggan tidak aktif."
-	}
-
     left, right = st.columns(2)
 
     with left:
@@ -372,20 +382,22 @@ elif page == "Dashboard RFM":
             "<h3 style='text-align: center;'>Input Nilai RFM</h3>",
             unsafe_allow_html=True
         )
+        
+        with st.container(border=True):
+            start_date = st.date_input("Tanggal terakhir transaksi pelanggan")
+            end_date = st.date_input("Tanggal analisis", datetime.today())
 
-        start_date = st.date_input("Tanggal terakhir transaksi pelanggan")
-        end_date = st.date_input("Tanggal analisis", datetime.today())
+            if start_date > end_date:
+                st.error("❌ Tanggal terakhir transaksi tidak boleh melebihi tanggal analisis.")
+                recency = None
+            else:
+                recency = (end_date - start_date).days
 
-        if start_date > end_date:
-            st.error("❌ Tanggal terakhir transaksi tidak boleh melebihi tanggal analisis.")
-            recency = None
-        else:
-            recency = (end_date - start_date).days
+            freq = st.number_input("Frequency (jumlah transaksi)", min_value=0)
+            mon = st.number_input("Monetary (total pembelian)", min_value=0)
 
-        freq = st.number_input("Frequency (jumlah transaksi)", min_value=0)
-        mon = st.number_input("Monetary (total pembelian)", min_value=0)
-
-        btn = st.button("Prediksi Cluster")
+            st.write("") # Spacer
+            btn = st.button("Prediksi Cluster", use_container_width=True)
 
     with right:
         st.markdown(
@@ -393,16 +405,22 @@ elif page == "Dashboard RFM":
             unsafe_allow_html=True
         )
 
-        if btn and recency is not None:
-            X_scaled = scaler.transform([[recency, freq, mon]])
-            X_pca = pca.transform(X_scaled)
-            cluster_pred = kmeans.predict(X_pca)[0]
+        with st.container(border=True):
+            if btn and recency is not None:
+                # Proses Prediksi
+                X_scaled = scaler.transform([[recency, freq, mon]])
+                X_pca = pca.transform(X_scaled)
+                cluster_pred = kmeans.predict(X_pca)[0]
 
-            cluster_name = cluster_names[cluster_pred]
-            recommendation = cluster_reco[cluster_pred]
+                cluster_name = cluster_names[cluster_pred]
+                recommendation = cluster_reco[cluster_pred]
 
-            # ---- OUTPUT ----
-            st.markdown("<div class='result-box'>", unsafe_allow_html=True)
-            st.success(f"Cluster Prediksi: **{cluster_name}**")
-            st.info(f"Rekomendasi: {recommendation}")
-            st.markdown("</div>", unsafe_allow_html=True)
+                # ---- OUTPUT ----
+                st.success(f"Cluster Prediksi: **{cluster_name}**")
+                st.info(f"💡 **Rekomendasi:** {recommendation}")
+            
+            elif btn and recency is None:
+                st.warning("Perbaiki tanggal terlebih dahulu.")
+            
+            else:
+                st.write("Silakan input data dan tekan tombol prediksi.")
