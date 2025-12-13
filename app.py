@@ -73,7 +73,10 @@ st.markdown("""
 with st.sidebar:
     st.markdown('<div style="margin-bottom: 20px;">', unsafe_allow_html=True)
     # Pastikan file alllogo.png ada di folder image/
-    st.image("image/alllogo.png", width=220) 
+    try:
+        st.image("image/alllogo.png", width=220) 
+    except:
+        st.caption("Logo not found")
     st.markdown('</div>', unsafe_allow_html=True)
 
     st.markdown("### 🧭 Main Menu")
@@ -170,7 +173,6 @@ if page == "Executive Overview":
         """, unsafe_allow_html=True)
 
     # --- TABS FOR ORGANIZED CONTENT ---
-    # 1. GANTI NAMA TAB KE-3 MENJADI "📈 Visual Overview"
     tab1, tab2, tab3 = st.tabs(["🎯 Business Objectives", "📂 Dataset Explorer", "📈 Visual Overview"])
 
     with tab1:
@@ -185,7 +187,6 @@ if page == "Executive Overview":
             
         st.markdown("#### 🔑 The RFM Concept")
         try:
-            # Pastikan nama file sesuai dengan yang ada di GitHub (case-sensitive)
             st.image("image/rfmanalysisdiagram.png", caption="Recency, Frequency, Monetary Model Concept", width=600)
         except Exception:
              st.warning("Gambar 'rfmanalysisdiagram.png' tidak ditemukan. Cek folder image.")
@@ -239,46 +240,89 @@ if page == "Executive Overview":
             }
              st.table(pd.DataFrame(metadata))
 
-    # 2. ISI TAB VISUAL OVERVIEW (HAPUS YANG LAMA, MASUKKAN CHART BARU)
+    # --- BAGIAN VISUAL OVERVIEW (UPDATED) ---
     with tab3:
         st.subheader("Visualisasi Data Utama")
         
-        col_viz1, col_viz2 = st.columns(2)
+        # 1. PENGATUR TANGGAL (DATE FILTER)
+        st.markdown("##### 🗓️ Filter Periode Data")
         
-        # a. Line Chart Bulanan
-        with col_viz1:
-             st.markdown("#### 📈 Tren Pertumbuhan (Bulanan)")
-             # Proses Data: Resample ke Bulanan
-             df_trend = df.copy()
-             if 'first_order_date' in df_trend.columns:
-                 df_trend = df_trend.set_index('first_order_date')
-                 monthly_counts = df_trend.resample('MS').size().reset_index(name='count')
-                 
-                 fig_line = px.line(
-                    monthly_counts,
-                    x='first_order_date',
-                    y='count',
-                    markers=True,
-                    labels={'first_order_date': 'Bulan', 'count': 'Jumlah Order'},
-                    color_discrete_sequence=["#EF8505"]
-                 )
-                 # Hapus title di dalam chart biar tidak dobel dengan markdown
-                 fig_line.update_layout(title=None)
-                 st.plotly_chart(fig_line, use_container_width=True)
-             else:
-                 st.error("Kolom 'first_order_date' tidak ditemukan.")
+        # Ambil min dan max tanggal dari data untuk default value
+        min_date_available = df['first_order_date'].min().date()
+        max_date_available = df['first_order_date'].max().date()
+        
+        col_filter1, col_filter2 = st.columns(2)
+        
+        with col_filter1:
+            start_date = st.date_input(
+                "Mulai Tanggal", 
+                value=min_date_available, 
+                min_value=min_date_available, 
+                max_value=max_date_available
+            )
+        
+        with col_filter2:
+            end_date = st.date_input(
+                "Sampai Tanggal", 
+                value=max_date_available, 
+                min_value=min_date_available, 
+                max_value=max_date_available
+            )
+            
+        # 2. FILTER DATA BERDASARKAN TANGGAL
+        # Mengubah kolom 'first_order_date' menjadi date object untuk perbandingan
+        mask = (df['first_order_date'].dt.date >= start_date) & (df['first_order_date'].dt.date <= end_date)
+        df_filtered = df.loc[mask]
+        
+        st.divider()
 
-        # b. Pie Chart Order Channel
-        with col_viz2:
-             st.markdown("#### 🥧 Distribusi Channel")
-             fig_pie = px.pie(
-                df, 
-                names='order_channel', 
-                color='order_channel', 
-                color_discrete_sequence=px.colors.sequential.Oranges_r, 
-                hole=0.4
-             )
-             st.plotly_chart(fig_pie, use_container_width=True)
+        if df_filtered.empty:
+            st.warning("⚠️ Tidak ada data transaksi pada rentang tanggal yang dipilih.")
+        else:
+            col_viz1, col_viz2 = st.columns(2)
+            
+            # a. Line Chart Bulanan (Menggunakan df_filtered)
+            with col_viz1:
+                 # [REQUEST] Judul diubah
+                 st.markdown("#### 📈 Pertumbuhan Pelanggan") 
+                 
+                 # Resample Data Filtered
+                 df_trend = df_filtered.copy()
+                 if 'first_order_date' in df_trend.columns:
+                     df_trend = df_trend.set_index('first_order_date')
+                     monthly_counts = df_trend.resample('MS').size().reset_index(name='count')
+                     
+                     fig_line = px.line(
+                        monthly_counts,
+                        x='first_order_date',
+                        y='count',
+                        markers=True,
+                        labels={'first_order_date': 'Bulan', 'count': 'Jumlah Pelanggan Baru'},
+                        color_discrete_sequence=["#EF8505"]
+                     )
+                     
+                     fig_line.update_layout(
+                         title_text="",
+                         margin=dict(t=20),
+                         xaxis_title="Periode",
+                         yaxis_title="Total Customer"
+                     )
+                     
+                     st.plotly_chart(fig_line, use_container_width=True)
+                 else:
+                     st.error("Kolom 'first_order_date' tidak ditemukan.")
+
+            # b. Pie Chart Order Channel (Menggunakan df_filtered)
+            with col_viz2:
+                 st.markdown("#### 🥧 Distribusi Channel")
+                 fig_pie = px.pie(
+                    df_filtered, 
+                    names='order_channel', 
+                    color='order_channel', 
+                    color_discrete_sequence=px.colors.sequential.Oranges_r, 
+                    hole=0.4
+                 )
+                 st.plotly_chart(fig_pie, use_container_width=True)
 
 
 # ============================================================
@@ -392,4 +436,7 @@ elif page == "Prediksi & Insight":
             
         else:
             st.info("👈 Masukkan data di panel kiri untuk melihat hasil prediksi.")
-            st.image("image/alllogo.png", width=100) # Placeholder image
+            try:
+                st.image("image/alllogo.png", width=100) # Placeholder image
+            except:
+                pass
