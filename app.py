@@ -5,12 +5,23 @@ from datetime import datetime
 import plotly.express as px
 import plotly.graph_objects as go # Ditambahkan untuk kustomisasi lebih detail
 
+import streamlit as st
+from PIL import Image  # Tambahkan library PIL untuk loading gambar lebih aman
+
 # ======================
 # 1. CONFIG PAGE
 # ======================
+
+# Tips: Menggunakan Image.open lebih aman daripada string path langsung
+# untuk memastikan gambar terbaca dengan benar.
+try:
+    icon_img = Image.open("floimage.png")
+except FileNotFoundError:
+    icon_img = "💎"  # Fallback ke diamond jika file flo.png lupa dimasukkan
+
 st.set_page_config(
     page_title="Customer Segmentation Pro",
-    page_icon="💎",
+    page_icon=icon_img,  # Ganti "💎" dengan variabel gambar
     layout="wide"
 )
 
