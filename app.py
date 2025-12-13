@@ -62,7 +62,7 @@ st.markdown("""
         margin: 0px !important;
     }
 
-    /* Khusus gambar, biar lebih rapat */
+    /* Khusus gambar */
     .sidebar-images img {
         margin-bottom: 0px !important;
         margin-top: 0px !important;
