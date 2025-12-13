@@ -240,7 +240,7 @@ if page == "Executive Overview":
             }
              st.table(pd.DataFrame(metadata))
 
-    # --- BAGIAN VISUAL OVERVIEW (COMPLETELY UPDATED) ---
+    # --- BAGIAN VISUAL OVERVIEW (UPDATED WITH CLEANING) ---
     with tab3:
         st.subheader("Visualisasi Data Utama")
         
@@ -270,6 +270,10 @@ if page == "Executive Overview":
             )
             
         # 2. FILTER DATA BERDASARKAN TANGGAL
+        if start_date > end_date:
+            st.error("Tanggal Mulai tidak boleh lebih besar dari Tanggal Sampai.")
+            st.stop()
+
         mask = (df['first_order_date'].dt.date >= start_date) & (df['first_order_date'].dt.date <= end_date)
         df_filtered = df.loc[mask]
         
@@ -371,13 +375,31 @@ if page == "Executive Overview":
                 fig_rev.update_layout(xaxis_title="Total Revenue (₺)", yaxis_title="", showlegend=False)
                 st.plotly_chart(fig_rev, use_container_width=True)
 
-            # === ROW 3: CATEGORIES (MOVED DOWN FOR BETTER VIEW) ===
+            # === ROW 3: CATEGORIES (REVISED WITH CLEANING) ===
             st.divider()
             st.markdown("#### 🛍️ Top Kategori Peminatan")
+            st.caption("Menampilkan kategori produk yang paling sering diminati pada rentang tanggal yang dipilih.")
             
             if 'interested_in_categories_12' in df_filtered.columns:
-                cat_counts = df_filtered['interested_in_categories_12'].value_counts().reset_index()
+                # 1. Definisi Fungsi Cleaning (Local Scope)
+                def clean_list(x):
+                    if isinstance(x, str):
+                        x = x.strip("[]")
+                        return [i.strip().replace("'", "") for i in x.split(",")]
+                    return []
+
+                # 2. Proses Cleaning pada Data Terfilter
+                df_cat = df_filtered.copy()
+                df_cat["categories"] = df_cat["interested_in_categories_12"].apply(clean_list)
+                
+                # 3. Explode menjadi baris terpisah
+                df_exploded = df_cat.explode("categories")
+                
+                # 4. Hitung Frekuensi
+                cat_counts = df_exploded["categories"].value_counts().reset_index()
                 cat_counts.columns = ['Category', 'Count']
+                
+                # Ambil Top 10
                 cat_counts = cat_counts.head(10).sort_values(by='Count', ascending=True)
                 
                 fig_bar = px.bar(
@@ -389,7 +411,6 @@ if page == "Executive Overview":
                 st.plotly_chart(fig_bar, use_container_width=True)
             else:
                 st.warning("⚠️ Kolom kategori tidak ditemukan.")
-
 
 # ============================================================
 # PAGE 2: DASHBOARD RFM
