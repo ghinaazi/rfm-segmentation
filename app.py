@@ -395,54 +395,166 @@ if page == "Executive Overview":
 # PAGE 2: DASHBOARD RFM
 # ============================================================
 elif page == "Dashboard RFM":
-    st.markdown("<h1 style='text-align: center;'>📊 Performance Dashboard</h1>", unsafe_allow_html=True)
+    st.markdown("<h1 style='text-align: center;'>📊 RFM Deep Dive Analysis</h1>", unsafe_allow_html=True)
+    st.write("Analisis mendalam mengenai karakteristik Recency, Frequency, dan Monetary pelanggan.")
     st.markdown("---")
 
-    # --- KPI SUMMARY ---
-    total_cust = df.shape[0]
-    avg_monetary = df["Monetary"].mean()
-    
-    k1, k2, k3 = st.columns(3)
-    k1.metric("Active Customers", f"{total_cust:,}", "User Base")
-    k2.metric("Average Spending", f"₺ {avg_monetary:,.0f}", "per User")
-    k3.metric("Clustering Confidence", "Silhouette 0.65", "High Quality")
+    # --- 1. CONFIG & DATE FILTER ---
+    # Pastikan kolom tanggal dalam format datetime
+    if "last_order_date" in df.columns:
+        df["last_order_date"] = pd.to_datetime(df["last_order_date"])
+    else:
+        st.error("⚠️ Kolom 'last_order_date' tidak ditemukan untuk perhitungan Recency.")
+        st.stop()
 
-    st.markdown("---")
-
-    # --- VISUALIZATION ROW 1 ---
-    c1, c2 = st.columns(2)
-    with c1:
-        st.subheader("Channel Preference")
-        fig = px.pie(df, names='order_channel', color='order_channel', 
-                     color_discrete_sequence=px.colors.sequential.Oranges_r, hole=0.4)
-        st.plotly_chart(fig, use_container_width=True)
-    
-    with c2:
-        st.subheader("Transaction Volume Timeline")
-        daily_counts = df.groupby('first_order_date').size().reset_index(name='counts')
-        fig = px.area(daily_counts, x='first_order_date', y='counts', 
-                      color_discrete_sequence=['#EF8505'])
-        st.plotly_chart(fig, use_container_width=True)
-
-    # --- VISUALIZATION ROW 2 (CLUSTERS) ---
-    st.subheader("🔎 Deep Dive: Customer Clusters")
-    if "Cluster" in df.columns:
-        df["Cluster_Name"] = df["Cluster"].map(cluster_names)
+    with st.container(border=True):
+        st.markdown("### 🗓️ Filter Periode Data")
         
-        col_cl1, col_cl2 = st.columns([2, 1])
-        with col_cl1:
-             fig = px.bar(df.groupby("Cluster_Name").mean(numeric_only=True).reset_index(), 
-                          x="Cluster_Name", y=["Recency", "Frequency"], barmode="group",
-                          color_discrete_sequence=["#323232", "#EF8505"])
-             st.plotly_chart(fig, use_container_width=True)
-             
-        with col_cl2:
-            st.markdown("#### Insight:")
-            st.markdown("""
-            - **Loyal:** Frequency tinggi, Recency rendah.
-            - **Inactive:** Recency sangat tinggi (sudah lama tidak belanja).
-            - **Potential:** Perlu didorong agar frekuensi naik.
-            """)
+        # Ambil min/max date
+        min_date = df["last_order_date"].min().date()
+        max_date = df["last_order_date"].max().date()
+
+        col_f1, col_f2 = st.columns([2, 1])
+        with col_f1:
+            date_range = st.date_input(
+                "Pilih Rentang Tanggal Transaksi Terakhir",
+                value=(min_date, max_date),
+                min_value=min_date,
+                max_value=max_date
+            )
+        
+        # Validasi Input Tanggal (Mencegah error jika user hanya klik 1 tanggal)
+        if len(date_range) == 2:
+            start_date, end_date = date_range
+            # Filter DataFrame
+            mask = (df["last_order_date"].dt.date >= start_date) & (df["last_order_date"].dt.date <= end_date)
+            df_rfm = df.loc[mask]
+        else:
+            st.info("⏳ Harap pilih tanggal awal dan akhir.")
+            st.stop()
+
+    # --- 2. KEY PERFORMANCE INDICATORS (KPI) RFM ---
+    # Handle jika data kosong setelah difilter
+    if df_rfm.empty:
+        st.warning("⚠️ Tidak ada data ditemukan pada rentang tanggal ini.")
+    else:
+        st.markdown("### 🚀 Key Metrics (Rata-rata)")
+        
+        # Hitung Rata-rata
+        avg_recency = df_rfm["Recency"].mean()
+        avg_freq = df_rfm["Frequency"].mean()
+        avg_monetary = df_rfm["Monetary"].mean()
+
+        kpi1, kpi2, kpi3 = st.columns(3)
+
+        with kpi1:
+            st.markdown(f"""
+            <div class="premium-card">
+                <div class="metric-label">Avg. Recency (Hari)</div>
+                <div class="metric-value">{avg_recency:.1f}</div>
+                <small>Semakin kecil semakin baik</small>
+            </div>
+            """, unsafe_allow_html=True)
+
+        with kpi2:
+            st.markdown(f"""
+            <div class="premium-card">
+                <div class="metric-label">Avg. Frequency</div>
+                <div class="metric-value">{avg_freq:.1f}x</div>
+                <small>Rata-rata transaksi per user</small>
+            </div>
+            """, unsafe_allow_html=True)
+
+        with kpi3:
+            st.markdown(f"""
+            <div class="premium-card">
+                <div class="metric-label">Avg. Monetary</div>
+                <div class="metric-value">₺{avg_monetary:,.0f}</div>
+                <small>Total belanja rata-rata</small>
+            </div>
+            """, unsafe_allow_html=True)
+
+        st.markdown("---")
+
+        # --- 3. CLUSTER VISUALIZATION (3D SCATTER) ---
+        st.subheader("🧊 3D Cluster Visualization")
+        st.caption("Interaksi: Putar, Zoom, dan Hover untuk melihat detail tiap pelanggan.")
+
+        if "Cluster" in df_rfm.columns:
+            # Map Cluster ID ke Nama agar Legend Rapi
+            df_rfm["Cluster Label"] = df_rfm["Cluster"].map(cluster_names)
+
+            # Buat 3D Scatter Plot
+            fig_3d = px.scatter_3d(
+                df_rfm,
+                x='Recency',
+                y='Frequency',
+                z='Monetary',
+                color='Cluster Label',
+                color_discrete_map={
+                    "Low Value / Inactive": "#808080",  # Abu-abu
+                    "High Value / Loyal": "#EF8505",    # Orange Brand
+                    "Medium / Potential": "#1E90FF"     # Biru
+                },
+                opacity=0.7,
+                height=600,
+                hover_data=['master_id']
+            )
+            
+            fig_3d.update_layout(
+                margin=dict(l=0, r=0, b=0, t=0),
+                scene=dict(
+                    xaxis_title='Recency (Days)',
+                    yaxis_title='Frequency (Count)',
+                    zaxis_title='Monetary (Value)'
+                )
+            )
+            st.plotly_chart(fig_3d, use_container_width=True)
+        else:
+            st.warning("⚠️ Kolom 'Cluster' tidak ditemukan dalam data.")
+
+        st.divider()
+
+        # --- 4. COMPARED STATISTICS (BAR CHARTS) ---
+        # Bagian ini tetap dipertahankan namun menggunakan data yang sudah difilter (df_rfm)
+        st.subheader("📊 Perbandingan Karakteristik Cluster")
+        
+        if "Cluster" in df_rfm.columns:
+            # Grouping Data
+            df_grouped = df_rfm.groupby("Cluster Label")[["Recency", "Frequency", "Monetary"]].mean().reset_index()
+
+            col_c1, col_c2 = st.columns(2)
+
+            with col_c1:
+                st.markdown("**Recency & Frequency by Cluster**")
+                fig_bar = px.bar(
+                    df_grouped,
+                    x="Cluster Label",
+                    y=["Recency", "Frequency"],
+                    barmode="group",
+                    color_discrete_sequence=["#323232", "#EF8505"],
+                    text_auto='.1f'
+                )
+                fig_bar.update_layout(yaxis_title="Value", xaxis_title="", legend_title="Metric")
+                st.plotly_chart(fig_bar, use_container_width=True)
+
+            with col_c2:
+                st.markdown("**Monetary Value by Cluster**")
+                fig_mon = px.bar(
+                    df_grouped,
+                    x="Cluster Label",
+                    y="Monetary",
+                    text="Monetary",
+                    color="Cluster Label",
+                    color_discrete_map={
+                    "Low Value / Inactive": "#808080",
+                    "High Value / Loyal": "#EF8505",
+                    "Medium / Potential": "#1E90FF"
+                    }
+                )
+                fig_mon.update_traces(texttemplate='₺%{text:.2s}', textposition='outside')
+                fig_mon.update_layout(yaxis_title="Monetary (₺)", xaxis_title="", showlegend=False)
+                st.plotly_chart(fig_mon, use_container_width=True)
 
 
 # ============================================================
