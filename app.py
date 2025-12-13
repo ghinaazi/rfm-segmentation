@@ -137,34 +137,32 @@ if page == "Executive Overview":
     
     st.markdown("---")
 
-    # --- TOP LEVEL METRICS ---
-    m1, m2, m3, m4 = st.columns(4)
+    # --- TOP LEVEL METRICS (REVISED: 3 COLUMNS) ---
+    # Hitung Total Order Gabungan (Online + Offline)
+    total_orders_all = df['order_num_total_ever_online'].sum() + df['order_num_total_ever_offline'].sum()
     
+    m1, m2, m3 = st.columns(3) # Menggunakan 3 Kolom
+    
+    # KPI 1: Total Customers
     with m1:
         st.markdown(f"""
         <div class="premium-card">
-            <div class="metric-label">Total Data Points</div>
+            <div class="metric-label">Total Customers</div>
             <div class="metric-value">{df2.shape[0]:,}</div>
         </div>
         """, unsafe_allow_html=True)
         
+    # KPI 2: Total Orders (Online + Offline)
     with m2:
         st.markdown(f"""
         <div class="premium-card">
-            <div class="metric-label">Online Orders</div>
-            <div class="metric-value">{df['order_num_total_ever_online'].sum():,}</div>
+            <div class="metric-label">Total Orders</div>
+            <div class="metric-value">{total_orders_all:,}</div>
         </div>
         """, unsafe_allow_html=True)
 
+    # KPI 3: Total Revenue
     with m3:
-        st.markdown(f"""
-        <div class="premium-card">
-            <div class="metric-label">Offline Orders</div>
-            <div class="metric-value">{df['order_num_total_ever_offline'].sum():,}</div>
-        </div>
-        """, unsafe_allow_html=True)
-        
-    with m4:
         st.markdown(f"""
         <div class="premium-card">
             <div class="metric-label">Total Revenue</div>
@@ -240,7 +238,7 @@ if page == "Executive Overview":
             }
              st.table(pd.DataFrame(metadata))
 
-    # --- BAGIAN VISUAL OVERVIEW (UPDATED WITH CLEANING) ---
+    # --- BAGIAN VISUAL OVERVIEW (UPDATED WITH CLEANING & FILTER) ---
     with tab3:
         st.subheader("Visualisasi Data Utama")
         
@@ -375,13 +373,13 @@ if page == "Executive Overview":
                 fig_rev.update_layout(xaxis_title="Total Revenue (₺)", yaxis_title="", showlegend=False)
                 st.plotly_chart(fig_rev, use_container_width=True)
 
-            # === ROW 3: CATEGORIES (REVISED WITH CLEANING) ===
+            # === ROW 3: CATEGORIES (WITH CLEANING LOGIC) ===
             st.divider()
             st.markdown("#### 🛍️ Top Kategori Peminatan")
             st.caption("Menampilkan kategori produk yang paling sering diminati pada rentang tanggal yang dipilih.")
             
             if 'interested_in_categories_12' in df_filtered.columns:
-                # 1. Definisi Fungsi Cleaning (Local Scope)
+                # 1. Definisi Fungsi Cleaning
                 def clean_list(x):
                     if isinstance(x, str):
                         x = x.strip("[]")
@@ -392,7 +390,7 @@ if page == "Executive Overview":
                 df_cat = df_filtered.copy()
                 df_cat["categories"] = df_cat["interested_in_categories_12"].apply(clean_list)
                 
-                # 3. Explode menjadi baris terpisah
+                # 3. Explode
                 df_exploded = df_cat.explode("categories")
                 
                 # 4. Hitung Frekuensi
@@ -411,7 +409,6 @@ if page == "Executive Overview":
                 st.plotly_chart(fig_bar, use_container_width=True)
             else:
                 st.warning("⚠️ Kolom kategori tidak ditemukan.")
-
 # ============================================================
 # PAGE 2: DASHBOARD RFM
 # ============================================================
