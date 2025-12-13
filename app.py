@@ -116,13 +116,6 @@ st.markdown(f"""
 """, unsafe_allow_html=True)
 
 # ======================
-SIDEBAR
-# ======================
-
-import streamlit as st
-import pandas as pd
-import pickle
-import plotly.express as px
 
 # ======================
 # 1. CONFIG PAGE
