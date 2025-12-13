@@ -143,9 +143,13 @@ with st.sidebar:
     )
 
     st.markdown("---")
-    st.markdown('<div style="text-align: center;">', unsafe_allow_html=True)
-    st.caption("© 2025 Team A25-CS254 \n Customer Segmentation System")
-    st.markdown('</div>', unsafe_allow_html=True)
+    # Menggunakan HTML langsung agar bisa diatur jarak antar barisnya
+    st.markdown("""
+        <div style="text-align: center; font-size: 12px; color: #7F8C8D;">
+            © 2025 Team A25-CS254<br>
+            Customer Segmentation System
+        </div>
+    """, unsafe_allow_html=True)
 
 # ======================
 # 4. LOAD DATA & MODELS
