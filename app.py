@@ -116,96 +116,69 @@ st.markdown(f"""
 """, unsafe_allow_html=True)
 
 # ======================
-# CSS REVISI FINAL (Logo Tinggi, Menu 1 Baris, Footer Jelas)
+# CSS SUPER AESTHETIC (Orange Theme)
 # ======================
 st.markdown("""
     <style>
-        /* 1. SIDEBAR BACKGROUND */
+        /* 1. SIDEBAR BACKGROUND: Gradasi Oranye Elegan */
         [data-testid="stSidebar"] {
-            background: linear-gradient(180deg, #F37335 0%, #FDC830 100%);
+            background: linear-gradient(180deg, #F37335 0%, #FDC830 100%); /* Citrus Peel Gradient */
             border-right: 1px solid rgba(255,255,255,0.2);
         }
 
-        /* 2. ATUR POSISI LOGO (Biar Lebih Tinggi) */
-        /* Kita target container paling atas di sidebar */
-        [data-testid="stSidebarUserContent"] {
-            padding-top: 0px; /* Hapus padding bawaan */
-        }
-        .logo-container {
-            margin-top: -50px; /* Paksa naik ke atas */
-            margin-bottom: 10px;
-            text-align: center;
-        }
-
-        /* 3. MENU ITEM STYLING (SATU BARIS) */
+        /* 2. MENU ITEM STYLING ("Dikotakin") */
+        /* Mengubah tampilan Radio Button menjadi tombol/kartu */
         .stRadio div[role='radiogroup'] > label {
-            background-color: rgba(255, 255, 255, 0.15);
+            background-color: rgba(255, 255, 255, 0.15); /* Transparan putih (Kaca) */
             border: 1px solid rgba(255, 255, 255, 0.2);
-            padding: 10px 15px;       /* Padding atas-bawah dikurangi sedikit */
-            border-radius: 12px;
-            margin-bottom: 8px;
+            padding: 12px 15px;       /* Jarak dalam agar terlihat 'tebal' */
+            border-radius: 12px;      /* Sudut membulat */
+            margin-bottom: 10px;      /* Jarak antar menu */
             transition: all 0.3s ease;
             cursor: pointer;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            color: white !important;  /* Warna teks putih */
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
         }
 
-        /* Hover Effect */
+        /* Efek saat mouse diarahkan (Hover) */
         .stRadio div[role='radiogroup'] > label:hover {
-            background-color: rgba(255, 255, 255, 0.35);
-            transform: translateX(3px);
+            background-color: rgba(255, 255, 255, 0.4); /* Lebih terang saat hover */
+            transform: translateX(5px); /* Geser sedikit ke kanan */
+            box-shadow: 0 6px 10px rgba(0,0,0,0.1);
         }
 
-        /* Teks Menu: Paksa 1 Baris & Font Pas */
+        /* Teks di dalam Radio Button */
         .stRadio div[role='radiogroup'] label p {
-            font-size: 14.5px !important;  /* Ukuran pas biar muat 1 baris */
+            font-size: 16px !important;
             font-weight: 500 !important;
             color: white !important;
-            white-space: nowrap !important; /* KUNCI: Mencegah teks turun ke baris 2 */
-            overflow: hidden !important;
-            text-overflow: ellipsis !important;
-            display: block !important;
         }
 
-        /* Header Main Menu */
-        .sidebar-header {
-            font-family: 'Outfit', sans-serif;
-            font-size: 18px;
-            font-weight: 700;
-            color: white;
-            margin-top: 10px;
-            margin-bottom: 15px;
-            text-shadow: 0 1px 2px rgba(0,0,0,0.1);
+        /* Menghilangkan bulatan radio button bawaan Streamlit agar full kotak */
+        .stRadio div[role='radiogroup'] label div[data-testid="stMarkdownContainer"] {
             display: flex;
             align-items: center;
-            gap: 8px;
         }
 
-        /* 4. FOOTER (Dibuat Lebih Kelihatan) */
-        .footer-container {
-            text-align: center;
-            background: rgba(255,255,255,0.4); /* Putih lebih tebal biar teks jelas */
-            padding: 15px;
-            border-radius: 12px;
-            margin-top: 30px;
-            border: 1px solid rgba(255,255,255,0.4);
-        }
-        
-        .footer-title {
-            font-size: 12px;
-            color: #4E342E; /* Cokelat Gelap (Kontras tinggi vs Kuning) */
-            margin: 0;
-            font-weight: 800;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-        
-        .footer-sub {
-            font-size: 11px;
-            color: #6D4C41; /* Cokelat agak terang dikit */
-            margin: 4px 0 0 0;
-            font-weight: 600;
+        /* 3. HEADER MAIN MENU */
+        .sidebar-header {
+            font-family: 'Outfit', sans-serif;
+            font-size: 20px;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 15px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
 
+        /* Garis pemisah estetik */
+        hr {
+            margin: 20px 0;
+            border: none;
+            border-top: 1px solid rgba(255,255,255,0.3);
+        }
     </style>
 """, unsafe_allow_html=True)
 
@@ -213,35 +186,42 @@ st.markdown("""
 # 3. SIDEBAR NAVIGATION
 # ======================
 with st.sidebar:
-    # --- LOGO SECTION (Dinaikkan dengan div wrapper) ---
-    st.markdown('<div class="logo-container">', unsafe_allow_html=True)
+    # --- LOGO SECTION ---
+    st.markdown('<div style="text-align: center; margin-bottom: 30px; margin-top: 20px;">', unsafe_allow_html=True)
     try:
         # Ganti dengan path logo kamu
-        st.image("image/alllogo.png", width=220) 
+        st.image("image/alllogo.png", width=200) 
     except:
-        st.markdown("<h3>🍊 LOGO HERE</h3>", unsafe_allow_html=True)
+        # Fallback jika logo error: Teks Estetik
+        st.markdown("""
+            <div style="background: rgba(255,255,255,0.2); padding: 15px; border-radius: 50%; width: 80px; height: 80px; margin: 0 auto; display: flex; align-items: center; justify-content: center;">
+                <span style="font-size: 40px;">🍊</span>
+            </div>
+        """, unsafe_allow_html=True)
     st.markdown('</div>', unsafe_allow_html=True)
 
     # --- CUSTOM HEADER ---
+    # Menggunakan HTML custom agar lebih rapi daripada st.markdown("### ...")
     st.markdown("""
         <div class="sidebar-header">
-            <span>🧭</span> Main Menu
+            <span></span> Main Menu
         </div>
     """, unsafe_allow_html=True)
 
-    # --- NAVIGATION MENU ---
-    # Icon saya sederhanakan spasinya agar muat 1 baris
+    # --- NAVIGATION MENU (Radio Button rasa Tombol) ---
+    # Kita tambahkan Emoji langsung di dalam list agar terlihat seperti Icon
     selected_page = st.sidebar.radio(
         "",
         [
-            "📊 Executive Overview",  # Spasi dikurangi dikit
-            "👥 Dashboard RFM", 
-            "🚀 Prediksi & Insight"
+            "Executive Overview ", 
+            "Dashboard RFM      ", 
+            "Prediksi & Insight "
         ],
         index=0,
-        label_visibility="collapsed"
+        label_visibility="collapsed" # Menyembunyikan label default "Choose an option"
     )
 
+    # Mapping pilihan kembali ke nama halaman asli (untuk logika page di bawah)
     if "Executive" in selected_page:
         page = "Executive Overview"
     elif "RFM" in selected_page:
@@ -249,19 +229,24 @@ with st.sidebar:
     else:
         page = "Prediksi & Insight"
 
-    # --- FOOTER (High Contrast) ---
-    st.markdown("---") # Garis pemisah bawaan streamlit
-    
+    # --- FOOTER ---
+    st.markdown("---")
     st.markdown("""
-        <div class="footer-container">
-            <p class="footer-title">
+        <div style="text-align: center; background: rgba(255,255,255,0.1); padding: 15px; border-radius: 12px; margin-top: 20px;">
+            <p style="font-size: 11px; color: rgba(255,255,255,0.8); margin: 0; font-weight: bold;">
                 CUSTOMER INTELLIGENCE
             </p>
-            <p class="footer-sub">
+            <p style="font-size: 10px; color: rgba(255,255,255,0.6); margin: 5px 0 0 0;">
                 © 2025 Team A25-CS254
             </p>
         </div>
     """, unsafe_allow_html=True)
+
+# ======================
+# LOGIKA HALAMAN (CONTOH)
+# ======================
+st.title(f"{page}")
+st.write("Konten halaman di sini...")
 
 # ======================
 # 4. LOAD DATA & MODELS
