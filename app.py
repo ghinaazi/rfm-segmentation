@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 import pickle
+from datetime import datetime
 import plotly.express as px
 
 # ======================
@@ -8,136 +9,60 @@ import plotly.express as px
 # ======================
 st.set_page_config(
     page_title="Customer Segmentation Pro",
-    page_icon="🍊",
-    layout="wide",
-    initial_sidebar_state="expanded"
+    page_icon="💎",
+    layout="wide"
 )
 
 # ======================
-# 2. ULTRA-AESTHETIC CSS V2 (Theme: Golden Hour & Glassmorphism)
+# 2. PREMIUM CSS STYLING
 # ======================
 st.markdown("""
     <style>
-        /* --- Import Font Premium --- */
-        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap');
-
-        /* --- Global Reset --- */
-        html, body, [class*="css"] {
-            font-family: 'Outfit', sans-serif;
-            color: #2C3E50;
-        }
-
-        /* --- BACKGROUND APP: SUBTLE AURORA --- */
-        /* Mengganti solid color dengan gradient halus agar terlihat "mahal" */
-        .stApp {
-            background: radial-gradient(circle at 10% 20%, rgba(255,248,225,0.6) 0%, rgba(255,255,255,1) 90%);
-        }
-
-        /* --- SIDEBAR DESIGN --- */
+        /* --- Sidebar Style --- */
         [data-testid="stSidebar"] {
-            /* Gradient Oranye yang Sangat Kaya & Deep */
-            background: linear-gradient(160deg, #FF512F 0%, #F09819 100%);
-            box-shadow: 10px 0 30px rgba(0,0,0,0.1);
-            border-right: 1px solid rgba(255,255,255,0.2);
+            background-color: #EF8505 !important;
         }
-
-        /* --- FIX ICON COLOR ISSUE --- */
-        /* Kita hanya mengubah warna TEKS menjadi putih, bukan gambar/icon */
-        [data-testid="stSidebar"] h1, 
-        [data-testid="stSidebar"] h2, 
-        [data-testid="stSidebar"] h3, 
-        [data-testid="stSidebar"] p, 
-        [data-testid="stSidebar"] span, 
-        [data-testid="stSidebar"] label {
-            color: #FFFFFF !important;
-        }
-        
-        /* Pastikan elemen gambar tidak dipaksa jadi putih/berubah */
-        [data-testid="stSidebar"] img {
-            filter: none !important; /* Mencegah filter warna */
-            mix-blend-mode: normal !important;
-        }
-
-        /* --- NAVIGATION MENU (THE WOW FACTOR) --- */
-        /* Wadah Radio Button */
-        .stRadio > div {
-            padding: 10px;
-        }
-
-        /* Opsi Navigasi (Unselected) */
-        .stRadio div[role='radiogroup'] > label {
-            background: rgba(255, 255, 255, 0.1); /* Semi transparan */
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            margin-bottom: 12px;
-            padding: 12px 15px;
-            border-radius: 12px;
+        [data-testid="stSidebar"] * {
             color: white !important;
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* Efek membal (bouncy) */
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-        }
-
-        /* Efek Hover Navigasi */
-        .stRadio div[role='radiogroup'] > label:hover {
-            background: rgba(255, 255, 255, 0.25);
-            transform: translateX(8px); /* Geser ke kanan sedikit saat hover */
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-        }
-
-        /* Opsi Navigasi (SELECTED) - Highlight Putih */
-        /* Streamlit menggunakan input:checked + div, kita akali dengan selector atribut */
-        div[data-baseweb="radio"] div[class*="checked"] {
-           /* Note: Streamlit kadang merender ini berbeda tergantung versi, 
-              tapi efek visual utama dikontrol lewat styling container di atas */
-        }
-
-        /* Trik CSS untuk Radio Button Streamlit agar terlihat seperti tombol aktif */
-        /* Ini akan membuat teks pilihan yang aktif menjadi lebih tebal */
-        .stRadio div[role='radiogroup'] label[data-checked="true"] {
-            background: #FFFFFF !important; /* Background Putih Solid */
-            color: #FF512F !important; /* Teks jadi oranye (kebalikan) */
-            font-weight: 800 !important;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
-            transform: scale(1.02);
-            border: none;
         }
         
-        /* Memaksa warna teks di dalam tombol aktif jadi Oranye */
-        .stRadio div[role='radiogroup'] label[data-checked="true"] p {
-            color: #FF512F !important;
+        /* --- Header Style --- */
+        [data-testid="stHeader"] {
+            background-color: #323232 !important;
         }
 
-        /* --- PREMIUM CARDS (MAIN CONTENT) --- */
+        /* --- Main Background --- */
+        .stApp {
+            background-color: #FAFAFA;
+        }
+
+        /* --- Custom Cards (Kotak Mewah) --- */
         .premium-card {
-            background: white;
-            padding: 24px;
-            border-radius: 24px; /* Sudut lebih bulat */
-            box-shadow: 0 15px 40px rgba(200, 200, 200, 0.15);
-            border: 1px solid rgba(255,255,255,0.5);
-            margin-bottom: 24px;
-            transition: transform 0.3s ease;
+            background-color: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            border-left: 5px solid #EF8505;
+            margin-bottom: 20px;
         }
         
-        .premium-card:hover {
-            transform: translateY(-8px);
+        .metric-label {
+            font-size: 14px;
+            color: #666;
+            font-weight: 500;
         }
         
         .metric-value {
-            background: -webkit-linear-gradient(45deg, #FF512F, #F09819);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            font-size: 38px;
-            font-weight: 800;
-        }
-        
-        /* --- TITLES GRADIENT --- */
-        h1, h2, h3 {
-            background: -webkit-linear-gradient(0deg, #1A1A1A, #4A4A4A); /* Dark Grey Gradient */
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            font-size: 26px;
+            color: #323232;
+            font-weight: bold;
         }
 
+        /* --- Navigation Clean Up --- */
+        [data-testid="stSidebar"] .element-container {
+            padding: 0px !important;
+            margin: 0px !important;
+        }
     </style>
 """, unsafe_allow_html=True)
 
@@ -146,77 +71,25 @@ st.markdown("""
 # 3. SIDEBAR NAVIGATION
 # ======================
 with st.sidebar:
-    st.markdown('<div style="text-align: center; margin-top: 10px; margin-bottom: 30px;">', unsafe_allow_html=True)
-    
-    # --- LOGO SECTION ---
-    # Trik: Menggunakan container putih transparan di belakang logo agar logo "pop out"
-    st.markdown("""
-        <div style="
-            background: rgba(255,255,255,0.15); 
-            width: 120px; 
-            height: 120px; 
-            border-radius: 50%; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            margin: 0 auto 15px auto;
-            backdrop-filter: blur(5px);
-            border: 1px solid rgba(255,255,255,0.3);
-            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
-        ">
-    """, unsafe_allow_html=True)
-    
+    st.markdown('<div style="margin-bottom: 20px;">', unsafe_allow_html=True)
+    # Pastikan file alllogo.png ada di folder image/
     try:
-        # Gunakan width yang pas agar masuk dalam lingkaran
-        st.image("image/alllogo.png", width=100) 
+        st.image("image/alllogo.png", width=220) 
     except:
-        st.markdown("<h1 style='font-size: 50px; margin:0;'>🍊</h1>", unsafe_allow_html=True)
-        
-    st.markdown("</div>", unsafe_allow_html=True) # Tutup div lingkaran
-    
-    st.markdown("""
-        <h3 style='text-align: center; margin-bottom: 0; font-weight: 800; letter-spacing: 1px;'>CRM PRO</h3>
-        <p style='text-align: center; font-size: 12px; opacity: 0.8; margin-top: 5px;'>Intelligence System</p>
-    """, unsafe_allow_html=True)
+        st.caption("Logo not found")
     st.markdown('</div>', unsafe_allow_html=True)
 
-    # --- MENU NAVIGATION ---
-    st.markdown("<p style='font-size: 11px; font-weight: 700; opacity: 0.7; margin-bottom: 10px; letter-spacing: 1px;'>DASHBOARD MENU</p>", unsafe_allow_html=True)
+    st.markdown("### 🧭 Main Menu")
     
+    # Navigasi menggunakan Radio Button (Terpisah & Jelas)
     page = st.sidebar.radio(
         "",
         ["Executive Overview", "Dashboard RFM", "Prediksi & Insight"],
-        index=0,
-        label_visibility="collapsed"
+        index=0
     )
     
-    # --- DECORATIVE ELEMENT ---
     st.markdown("---")
-    
-    # Info User Card (Kecil di bawah)
-    st.markdown("""
-        <div style="
-            background: rgba(255,255,255,0.1); 
-            padding: 15px; 
-            border-radius: 15px; 
-            display: flex; 
-            align-items: center; 
-            gap: 10px;
-            border: 1px solid rgba(255,255,255,0.1);
-        ">
-            <div style="
-                width: 8px; 
-                height: 8px; 
-                background-color: #00FF88; 
-                border-radius: 50%; 
-                box-shadow: 0 0 10px #00FF88;
-            "></div>
-            <div>
-                <p style="margin: 0; font-size: 12px; font-weight: 700;">System Online</p>
-                <p style="margin: 0; font-size: 10px; opacity: 0.7;">Updated: Today</p>
-            </div>
-        </div>
-    """, unsafe_allow_html=True)
+    st.caption("© 2025 Data Science Team\nCustomer Intelligence System")
 
 # ======================
 # 4. LOAD DATA & MODELS
