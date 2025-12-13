@@ -240,7 +240,7 @@ if page == "Executive Overview":
             }
              st.table(pd.DataFrame(metadata))
 
-    # --- BAGIAN VISUAL OVERVIEW (UPDATED) ---
+    # --- BAGIAN VISUAL OVERVIEW (COMPLETELY UPDATED) ---
     with tab3:
         st.subheader("Visualisasi Data Utama")
         
@@ -270,7 +270,6 @@ if page == "Executive Overview":
             )
             
         # 2. FILTER DATA BERDASARKAN TANGGAL
-        # Mengubah kolom 'first_order_date' menjadi date object untuk perbandingan
         mask = (df['first_order_date'].dt.date >= start_date) & (df['first_order_date'].dt.date <= end_date)
         df_filtered = df.loc[mask]
         
@@ -279,13 +278,13 @@ if page == "Executive Overview":
         if df_filtered.empty:
             st.warning("⚠️ Tidak ada data transaksi pada rentang tanggal yang dipilih.")
         else:
+            # === ROW 1: GROWTH & CHANNEL PIE ===
             col_viz1, col_viz2 = st.columns(2)
             
-            # a. Line Chart Bulanan (Menggunakan df_filtered)
+            # a. Line Chart Bulanan
             with col_viz1:
                  st.markdown("#### 📈 Pertumbuhan Pelanggan") 
                  
-                 # Resample Data Filtered
                  df_trend = df_filtered.copy()
                  if 'first_order_date' in df_trend.columns:
                      df_trend = df_trend.set_index('first_order_date')
@@ -306,12 +305,11 @@ if page == "Executive Overview":
                          xaxis_title="Periode",
                          yaxis_title="Total Customer"
                      )
-                     
                      st.plotly_chart(fig_line, use_container_width=True)
                  else:
                      st.error("Kolom 'first_order_date' tidak ditemukan.")
 
-            # b. Pie Chart Order Channel (Menggunakan df_filtered)
+            # b. Pie Chart Order Channel
             with col_viz2:
                  st.markdown("#### 🥧 Distribusi Channel")
                  fig_pie = px.pie(
@@ -323,39 +321,74 @@ if page == "Executive Overview":
                  )
                  st.plotly_chart(fig_pie, use_container_width=True)
             
-            # =======================================================
-            # c. Bar Chart Kategori (NEW ADDITION)
-            # =======================================================
-            st.markdown("---")
+            st.divider()
+            
+            # === ROW 2: ORDER VOLUME & REVENUE (COMPARED) ===
+            col_viz3, col_viz4 = st.columns(2)
+            
+            # c. Bar Chart: Volume Order (Online vs Offline)
+            with col_viz3:
+                st.markdown("#### 📦 Total Volume Transaksi")
+                
+                total_online = df_filtered['order_num_total_ever_online'].sum()
+                total_offline = df_filtered['order_num_total_ever_offline'].sum()
+                
+                df_vol = pd.DataFrame({
+                    'Channel': ['Online Order', 'Offline Order'],
+                    'Total Order': [total_online, total_offline]
+                })
+                
+                fig_vol = px.bar(
+                    df_vol, x='Total Order', y='Channel', orientation='h',
+                    text='Total Order', color='Channel',
+                    color_discrete_map={'Online Order': '#EF8505', 'Offline Order': '#323232'}
+                )
+                fig_vol.update_layout(xaxis_title="Jumlah Transaksi", yaxis_title="", showlegend=False)
+                st.plotly_chart(fig_vol, use_container_width=True)
+            
+            # d. Bar Chart: Revenue (Online vs Offline) -- NEW ADDITION --
+            with col_viz4:
+                st.markdown("#### 💰 Total Revenue (Pendapatan)")
+                
+                # Agregasi Sum
+                rev_online = df_filtered['customer_value_total_ever_online'].sum()
+                rev_offline = df_filtered['customer_value_total_ever_offline'].sum()
+                
+                df_rev = pd.DataFrame({
+                    'Source': ['Online Revenue', 'Offline Revenue'],
+                    'Revenue': [rev_online, rev_offline]
+                })
+                
+                fig_rev = px.bar(
+                    df_rev, x='Revenue', y='Source', orientation='h',
+                    text='Revenue', color='Source',
+                    color_discrete_map={'Online Revenue': '#EF8505', 'Offline Revenue': '#323232'}
+                )
+                
+                # Format text agar ada currency pound (£) dan disingkat (misal 1.2M)
+                fig_rev.update_traces(texttemplate='£%{text:.2s}', textposition='inside')
+                
+                fig_rev.update_layout(xaxis_title="Total Revenue (£)", yaxis_title="", showlegend=False)
+                st.plotly_chart(fig_rev, use_container_width=True)
+
+            # === ROW 3: CATEGORIES (MOVED DOWN FOR BETTER VIEW) ===
+            st.divider()
             st.markdown("#### 🛍️ Top Kategori Peminatan")
             
             if 'interested_in_categories_12' in df_filtered.columns:
-                # Menghitung jumlah kategori
                 cat_counts = df_filtered['interested_in_categories_12'].value_counts().reset_index()
                 cat_counts.columns = ['Category', 'Count']
-                
-                # Mengambil Top 10 dan Sorting agar chart rapi
                 cat_counts = cat_counts.head(10).sort_values(by='Count', ascending=True)
                 
                 fig_bar = px.bar(
-                    cat_counts,
-                    x='Count',
-                    y='Category',
-                    orientation='h',
-                    text='Count',
-                    color='Count',
+                    cat_counts, x='Count', y='Category', orientation='h',
+                    text='Count', color='Count',
                     color_continuous_scale=px.colors.sequential.Oranges
                 )
-                
-                fig_bar.update_layout(
-                    xaxis_title="Jumlah Transaksi",
-                    yaxis_title="",
-                    showlegend=False
-                )
-                
+                fig_bar.update_layout(xaxis_title="Jumlah Transaksi", yaxis_title="", showlegend=False)
                 st.plotly_chart(fig_bar, use_container_width=True)
             else:
-                st.warning("⚠️ Kolom 'interested_in_categories_12' tidak ditemukan.")
+                st.warning("⚠️ Kolom kategori tidak ditemukan.")
 
 
 # ============================================================
