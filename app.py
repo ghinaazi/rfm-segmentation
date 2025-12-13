@@ -265,16 +265,10 @@ if page == "Executive Overview":
         st.markdown("#### 🔑 The RFM Concept")
         try:
             # Menambahkan border halus dan shadow pada gambar diagram
-            st.markdown(f"""
-                <div style="border-radius: 12px; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.1); display: inline-block;">
-                    <img src="app/static/image/rfmanalysisdiagram.jpeg" width="600" alt="RFM Diagram">
-                </div>
-                <p style="color: {THEME_GRAY_TEXT}; font-size: 0.9em; margin-top: 5px;">Recency, Frequency, Monetary Model Concept</p>
-            """, unsafe_allow_html=True)
-             # NOTE: Gunakan st.image biasa jika path html di atas bermasalah
+            st.image("image/rfmanalysisdiagram.jpeg", caption="Recency, Frequency, Monetary Model Concept", width=600)
         except Exception:
              st.warning("Gambar 'rfmanalysisdiagram.jpeg' tidak ditemukan. Cek folder image.")
-
+            
     with tab2:
         st.subheader("Data Source Overview")
         st.markdown("Dataset ini menggabungkan perilaku transaksi dari OmniChannel (Aplikasi, Website, dan Toko Fisik).")
