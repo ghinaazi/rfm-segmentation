@@ -4,27 +4,31 @@ import pickle
 from datetime import datetime
 import plotly.express as px
 import plotly.graph_objects as go # Ditambahkan untuk kustomisasi lebih detail
-
 import streamlit as st
 from PIL import Image  # Tambahkan library PIL untuk loading gambar lebih aman
 
 # ======================
 # 1. CONFIG PAGE
 # ======================
+import streamlit as st
+from PIL import Image # Kita butuh bantuan "PIL" buat baca gambar
 
-# Tips: Menggunakan Image.open lebih aman daripada string path langsung
-# untuk memastikan gambar terbaca dengan benar.
+# ======================
+# 1. LOAD GAMBAR & CONFIG (Wajib Paling Atas)
+# ======================
 try:
-    icon_img = Image.open("floimage.png")
-except FileNotFoundError:
-    icon_img = "💎"  # Fallback ke diamond jika file flo.png lupa dimasukkan
+    img = Image.open("flo.png")
+except:
+    img = "💎" # Kalau flo.png gak ketemu, otomatis balik ke diamond biar gak error
 
 st.set_page_config(
     page_title="Customer Segmentation Pro",
-    page_icon=icon_img,  # Ganti "💎" dengan variabel gambar
+    page_icon=img,  # Masukkan variabel gambar di sini
     layout="wide"
 )
 
+# ... baru lanjut kode tema warna di bawah sini ...
+THEME_ORANGE = "#EF8505"
 # Warna Tema Utama (Dark Orange)
 THEME_ORANGE = "#EF8505"
 THEME_ORANGE_LIGHT = "#FF9F43"
@@ -133,7 +137,7 @@ st.markdown(f"""
 # ======================
 st.set_page_config(
     page_title="Customer Segmentation Pro",
-    page_icon="🍊",
+    page_icon="🔑",
     layout="wide",
     initial_sidebar_state="expanded"
 )
