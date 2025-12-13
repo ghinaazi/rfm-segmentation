@@ -283,7 +283,6 @@ if page == "Executive Overview":
             
             # a. Line Chart Bulanan (Menggunakan df_filtered)
             with col_viz1:
-                 # [REQUEST] Judul diubah
                  st.markdown("#### 📈 Pertumbuhan Pelanggan") 
                  
                  # Resample Data Filtered
@@ -323,6 +322,40 @@ if page == "Executive Overview":
                     hole=0.4
                  )
                  st.plotly_chart(fig_pie, use_container_width=True)
+            
+            # =======================================================
+            # c. Bar Chart Kategori (NEW ADDITION)
+            # =======================================================
+            st.markdown("---")
+            st.markdown("#### 🛍️ Top Kategori Peminatan")
+            
+            if 'interested_in_categories_12' in df_filtered.columns:
+                # Menghitung jumlah kategori
+                cat_counts = df_filtered['interested_in_categories_12'].value_counts().reset_index()
+                cat_counts.columns = ['Category', 'Count']
+                
+                # Mengambil Top 10 dan Sorting agar chart rapi
+                cat_counts = cat_counts.head(10).sort_values(by='Count', ascending=True)
+                
+                fig_bar = px.bar(
+                    cat_counts,
+                    x='Count',
+                    y='Category',
+                    orientation='h',
+                    text='Count',
+                    color='Count',
+                    color_continuous_scale=px.colors.sequential.Oranges
+                )
+                
+                fig_bar.update_layout(
+                    xaxis_title="Jumlah Transaksi",
+                    yaxis_title="",
+                    showlegend=False
+                )
+                
+                st.plotly_chart(fig_bar, use_container_width=True)
+            else:
+                st.warning("⚠️ Kolom 'interested_in_categories_12' tidak ditemukan.")
 
 
 # ============================================================
