@@ -9,59 +9,127 @@ import plotly.express as px
 # ======================
 st.set_page_config(
     page_title="Customer Segmentation Pro",
-    page_icon="💎",
-    layout="wide"
+    page_icon="🍊",
+    layout="wide",
+    initial_sidebar_state="expanded"
 )
 
 # ======================
-# 2. PREMIUM CSS STYLING
+# 2. ULTRA-AESTHETIC CSS (Theme: Modern Citrus & Dark Luxury)
 # ======================
 st.markdown("""
     <style>
-        /* --- Sidebar Style --- */
-        [data-testid="stSidebar"] {
-            background-color: #EF8505 !important;
-        }
-        [data-testid="stSidebar"] * {
-            color: white !important;
-        }
-        
-        /* --- Header Style --- */
-        [data-testid="stHeader"] {
-            background-color: #323232 !important;
+        /* --- Import Font Modern: Outfit (Lebih sleek dari font standar) --- */
+        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap');
+
+        /* --- Global Reset & Font --- */
+        html, body, [class*="css"] {
+            font-family: 'Outfit', sans-serif;
+            color: #2C3E50;
         }
 
-        /* --- Main Background --- */
+        /* --- BACKGROUND APP --- */
         .stApp {
-            background-color: #FAFAFA;
+            background-color: #FDFBF7; /* Cream sangat muda, hangat, nyaman di mata */
         }
 
-        /* --- Custom Cards (Kotak Mewah) --- */
+        /* --- SIDEBAR: The Masterpiece --- */
+        [data-testid="stSidebar"] {
+            /* Gradasi Oranye Mewah */
+            background: linear-gradient(135deg, #FF6B00 0%, #FF9E2C 100%);
+            box-shadow: 5px 0 15px rgba(0,0,0,0.1);
+            border-right: 1px solid rgba(255,255,255,0.2);
+        }
+        
+        /* Sidebar Text Elements */
+        [data-testid="stSidebar"] h1, [data-testid="stSidebar"] h2, [data-testid="stSidebar"] h3, 
+        [data-testid="stSidebar"] span, [data-testid="stSidebar"] label, [data-testid="stSidebar"] div, [data-testid="stSidebar"] p {
+            color: #FFFFFF !important;
+        }
+
+        /* --- NAVIGATION BUTTON STYLE (Glassmorphism) --- */
+        /* Mengubah radio button biasa menjadi tombol menu keren */
+        .stRadio > div {
+            background-color: transparent;
+        }
+        
+        /* Item Menu Normal */
+        .stRadio div[role='radiogroup'] > label {
+            background-color: rgba(255, 255, 255, 0.1); /* Transparan */
+            border: 1px solid rgba(255,255,255,0.1);
+            margin-bottom: 8px;
+            padding: 12px 15px;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        /* Item Menu saat Hover */
+        .stRadio div[role='radiogroup'] > label:hover {
+            background-color: rgba(255, 255, 255, 0.25);
+            transform: translateX(5px); /* Geser sedikit ke kanan */
+        }
+
+        /* --- HEADER & TITLES --- */
+        [data-testid="stHeader"] {
+            background-color: transparent !important;
+        }
+        
+        /* Judul Halaman dengan Gradient Text Effect */
+        h1, h2, h3 {
+            font-weight: 800 !important;
+            letter-spacing: -0.5px;
+        }
+
+        /* --- PREMIUM CARD DESIGN (Kotak Info) --- */
         .premium-card {
-            background-color: white;
-            padding: 20px;
-            border-radius: 12px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-            border-left: 5px solid #EF8505;
-            margin-bottom: 20px;
-        }
-        
-        .metric-label {
-            font-size: 14px;
-            color: #666;
-            font-weight: 500;
-        }
-        
-        .metric-value {
-            font-size: 26px;
-            color: #323232;
-            font-weight: bold;
+            background: #FFFFFF;
+            border-radius: 20px;
+            padding: 25px;
+            /* Shadow Halus tapi Mewah */
+            box-shadow: 0 10px 30px rgba(255, 107, 0, 0.05);
+            border: 1px solid rgba(0,0,0,0.02);
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
 
-        /* --- Navigation Clean Up --- */
-        [data-testid="stSidebar"] .element-container {
-            padding: 0px !important;
-            margin: 0px !important;
+        /* Aksen Garis Oranye di Atas Kartu */
+        .premium-card::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: linear-gradient(90deg, #FF6B00, #FFB74D);
+        }
+
+        .premium-card:hover {
+            transform: translateY(-5px); /* Naik sedikit saat hover */
+            box-shadow: 0 20px 40px rgba(255, 107, 0, 0.15);
+        }
+
+        .metric-label {
+            font-size: 13px;
+            color: #8C8C8C;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .metric-value {
+            font-size: 32px;
+            color: #2D3436;
+            font-weight: 800;
+            letter-spacing: -1px;
+            margin-top: 5px;
+        }
+
+        /* Menghilangkan padding default container agar lebih rapi */
+        .block-container {
+            padding-top: 2rem;
+            padding-bottom: 2rem;
         }
     </style>
 """, unsafe_allow_html=True)
@@ -71,26 +139,79 @@ st.markdown("""
 # 3. SIDEBAR NAVIGATION
 # ======================
 with st.sidebar:
-    st.markdown('<div style="margin-bottom: 20px;">', unsafe_allow_html=True)
-    # Pastikan file alllogo.png ada di folder image/
+    st.markdown('<div style="text-align: center; margin-top: 20px; margin-bottom: 30px;">', unsafe_allow_html=True)
+    # Placeholder Logo
     try:
-        st.image("image/alllogo.png", width=220) 
+        st.image("image/alllogo.png", width=180) 
     except:
-        st.caption("Logo not found")
+        # Fallback jika logo error: Icon aesthetic + Text
+        st.markdown("""
+            <div style="background: rgba(255,255,255,0.2); width: 80px; height: 80px; border-radius: 50%; margin: 0 auto; display: flex; align-items: center; justify-content: center; margin-bottom: 15px;">
+                <span style="font-size: 40px;">🍊</span>
+            </div>
+            <h2 style='color: white !important; margin:0; font-size: 24px;'>CRM PRO</h2>
+        """, unsafe_allow_html=True)
     st.markdown('</div>', unsafe_allow_html=True)
 
-    st.markdown("### 🧭 Main Menu")
+    st.markdown("<p style='font-size: 11px; color: rgba(255,255,255,0.8); font-weight: 600; margin-bottom: 5px; letter-spacing: 1px;'>NAVIGATION MENUS</p>", unsafe_allow_html=True)
     
-    # Navigasi menggunakan Radio Button (Terpisah & Jelas)
+    # Navigasi dengan Icon dan Kata-kata yang lebih Professional
+    # Tips: Spasi di awal string agar teks tidak nempel ke radio button
     page = st.sidebar.radio(
         "",
-        ["Executive Overview", "Dashboard RFM", "Prediksi & Insight"],
-        index=0
+        [
+            "📊  Executive Overview", 
+            "💎  RFM Segmentation", 
+            "🔮  Prediction & Insight"
+        ],
+        index=0,
+        label_visibility="collapsed"
     )
     
     st.markdown("---")
-    st.caption("© 2025 Data Science Team\nCustomer Intelligence System")
+    
+    # Footer Elegan
+    st.markdown("""
+        <div style="background: rgba(0,0,0,0.1); padding: 15px; border-radius: 12px; text-align: center; border: 1px solid rgba(255,255,255,0.1);">
+            <p style="margin: 0; font-size: 13px; font-weight: 600; color: white;">Analyst Team</p>
+            <p style="margin: 0; font-size: 10px; opacity: 0.7; color: white;">© 2025 Data Intelligence</p>
+        </div>
+    """, unsafe_allow_html=True)
 
+# ======================
+# 4. CONTENT EXAMPLE (Hanya contoh agar kamu lihat hasilnya)
+# ======================
+
+if "Executive Overview" in page:
+    st.title("Executive Overview")
+    st.markdown("Here is your daily business performance summary.")
+    
+    # Contoh penggunaan Premium Card
+    col1, col2, col3 = st.columns(3)
+    with col1:
+        st.markdown("""
+        <div class="premium-card">
+            <div class="metric-label">Total Revenue</div>
+            <div class="metric-value">Rp 2.5 M</div>
+            <div style="color: #27ae60; font-size: 12px; font-weight: 600; margin-top: 5px;">▲ 12% vs last month</div>
+        </div>
+        """, unsafe_allow_html=True)
+    with col2:
+        st.markdown("""
+        <div class="premium-card">
+            <div class="metric-label">Active Customers</div>
+            <div class="metric-value">1,240</div>
+            <div style="color: #27ae60; font-size: 12px; font-weight: 600; margin-top: 5px;">▲ 5% vs last month</div>
+        </div>
+        """, unsafe_allow_html=True)
+    with col3:
+        st.markdown("""
+        <div class="premium-card">
+            <div class="metric-label">Avg. Order Value</div>
+            <div class="metric-value">Rp 450k</div>
+            <div style="color: #e74c3c; font-size: 12px; font-weight: 600; margin-top: 5px;">▼ 2% vs last month</div>
+        </div>
+        """, unsafe_allow_html=True)
 # ======================
 # 4. LOAD DATA & MODELS
 # ======================
