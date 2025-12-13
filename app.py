@@ -72,7 +72,7 @@ st.markdown("""
 # ======================
 with st.sidebar:
     st.markdown('<div style="margin-bottom: 20px;">', unsafe_allow_html=True)
-    # Pastikan file ini ada di folder image/
+    # Pastikan file alllogo.png ada di folder image/
     st.image("image/alllogo.png", width=220) 
     st.markdown('</div>', unsafe_allow_html=True)
 
@@ -97,7 +97,8 @@ try:
     if "first_order_date" in df.columns:
         df["first_order_date"] = pd.to_datetime(df["first_order_date"])
 except Exception as e:
-    st.error(f"Error loading data: {e}. Pastikan file excel/csv ada di folder 'dataset'.")
+    st.error(f"Terjadi kesalahan saat memuat data: {e}")
+    st.warning("Pastikan file 'data_with_cluster.xlsx' dan 'flo_data_20k.csv' ada di dalam folder 'dataset' di GitHub Anda.")
     st.stop()
 
 # Load Models
@@ -106,7 +107,7 @@ try:
     pca = pickle.load(open("model/pca.pkl", "rb"))
     kmeans = pickle.load(open("model/kmeans.pkl", "rb"))
 except Exception:
-    st.warning("⚠️ Model belum ditemukan di folder 'model'. Fitur prediksi tidak akan berjalan.")
+    st.warning("⚠️ Model (scaler.pkl, pca.pkl, kmeans.pkl) belum ditemukan di folder 'model'. Fitur prediksi tidak akan berjalan.")
 
 # Mapping Nama Cluster
 cluster_names = {
@@ -182,8 +183,11 @@ if page == "Executive Overview":
             st.success("**3. Tingkatkan ROI**\n\nStrategi yang tepat sasaran terbukti meningkatkan konversi penjualan hingga 2-3x lipat.")
             
         st.markdown("#### 🔑 The RFM Concept")
-        # Ganti URL gambar jika ingin menggunakan gambar lokal
-        st.image("https://miro.medium.com/v2/resize:fit:1400/1*9N-JdC6a0eF5d3Vz-1u1pw.png", caption="Recency, Frequency, Monetary Model", width=600)
+        # --- GAMBAR LOKAL ---
+        try:
+            st.image("image/RFM Analysis Diagram.png", caption="Recency, Frequency, Monetary Model Concept", width=600)
+        except Exception:
+             st.warning("Gambar 'RFM Analysis Diagram.png' tidak ditemukan di folder 'image'. Mohon cek kembali nama file di GitHub.")
 
     with tab2:
         st.subheader("Data Source Overview")
@@ -201,10 +205,37 @@ if page == "Executive Overview":
             }
         )
         
+        # --- UPDATE: METADATA LENGKAP DIKEMBALIKAN ---
         with st.expander("Lihat Metadata Lengkap (Kamus Data)"):
              metadata = {
-                "Variabel": ["master_id", "order_channel", "Recency", "Frequency", "Monetary"],
-                "Deskripsi": ["ID Unik Pelanggan", "Platform transaksi", "Jarak hari transaksi terakhir", "Total frekuensi belanja", "Total uang yang dikeluarkan"]
+                "Variabel": [
+                    "master_id",
+                    "order_channel",
+                    "last_order_channel",
+                    "first_order_date",
+                    "last_order_date",
+                    "last_order_date_online",
+                    "last_order_date_offline",
+                    "order_num_total_ever_online",
+                    "order_num_total_ever_offline",
+                    "customer_value_total_ever_offline",
+                    "customer_value_total_ever_online",
+                    "interested_in_categories_12"
+                ],
+                "Deskripsi": [
+                    "Unique client number",
+                    "Channel belanja yang digunakan",
+                    "Channel pembelian terakhir",
+                    "Tanggal pembelian pertama",
+                    "Tanggal pembelian terakhir",
+                    "Tanggal pembelian online terakhir",
+                    "Tanggal pembelian offline terakhir",
+                    "Total transaksi online",
+                    "Total transaksi offline",
+                    "Total nilai transaksi offline",
+                    "Total nilai transaksi online",
+                    "Kategori belanja dalam 12 bulan terakhir"
+                ]
             }
              st.table(pd.DataFrame(metadata))
 
@@ -220,7 +251,7 @@ if page == "Executive Overview":
             4.  **Clustering:** Algoritma *K-Means* mengelompokkan pelanggan berdasarkan kemiripan pola belanja.
             """)
         
-        # --- FIX: MENGGUNAKAN GRAPHVIZ AGAR RENDER GAMBAR JELAS ---
+        # --- GRAPHVIZ CHART ---
         with col_flow:
             st.graphviz_chart("""
             digraph {
@@ -345,7 +376,7 @@ elif page == "Prediksi & Insight":
                 mean_monetary = df['Monetary'].mean() if not df.empty else 0
                 c_b.metric("Potential Value", "High" if mon > mean_monetary else "Standard")
             except Exception as e:
-                st.error(f"Terjadi kesalahan saat prediksi: {e}")
+                st.error(f"Terjadi kesalahan saat prediksi: {e}. Cek apakah model sudah dimuat dengan benar.")
             
         else:
             st.info("👈 Masukkan data di panel kiri untuk melihat hasil prediksi.")
