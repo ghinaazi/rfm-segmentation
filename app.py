@@ -399,8 +399,15 @@ elif page == "Dashboard RFM":
     st.write("Analisis mendalam mengenai karakteristik dan perilaku belanja pelanggan antar cluster.")
     st.markdown("---")
 
-    # --- 0. PREP DATA ---
-    # Pastikan kolom Cluster Label tersedia di df utama
+    # --- 0. PREP DATA & CLEANING FUNCTION ---
+    # Fungsi Cleaning dari User
+    def clean_list(x):
+        if isinstance(x, str):
+            x = x.strip("[]")
+            return [i.strip().replace("'", "") for i in x.split(",")] # Hapus tanda petik jika ada
+        return []
+
+    # Pastikan kolom Cluster Label tersedia
     if "Cluster" in df.columns:
         df["Cluster Label"] = df["Cluster"].map(cluster_names)
     else:
@@ -411,23 +418,20 @@ elif page == "Dashboard RFM":
     with st.container(border=True):
         st.markdown("### 🔍 Filter Data")
         
-        # Opsi Dropdown: Tambahkan "Semua Cluster" di awal
         cluster_options = ["Semua Cluster"] + list(df["Cluster Label"].unique())
-        
         selected_cluster = st.selectbox(
             "Pilih Kategori Pelanggan:",
             options=cluster_options,
             index=0
         )
         
-        # Logic Filter Data
+        # Logic Filter
         if selected_cluster == "Semua Cluster":
-            df_rfm = df.copy() # Pakai semua data
+            df_rfm = df.copy() 
         else:
-            df_rfm = df[df["Cluster Label"] == selected_cluster] # Filter sesuai pilihan
+            df_rfm = df[df["Cluster Label"] == selected_cluster] 
 
-    # --- 2. KEY METRICS (KPI) NETRAL ---
-    # KPI akan berubah sesuai filter cluster yang dipilih di atas
+    # --- 2. KEY METRICS (KPI) ---
     if df_rfm.empty:
         st.warning("Data tidak ditemukan.")
     else:
@@ -468,105 +472,140 @@ elif page == "Dashboard RFM":
 
     st.markdown("---")
 
-    # --- 3. 3D VISUALIZATION (KEMBALI KE 3D) ---
-    st.subheader(f"🧊 3D Customer Segmentation: {selected_cluster}")
-    st.caption("Interaksi: Putar, Zoom, dan Hover untuk melihat detail tiap pelanggan.")
+    # --- 3. 3D & CATEGORY INSIGHTS ---
+    # Layout: Kiri (3D Plot), Kanan (Top Categories Bar Chart)
+    col_main1, col_main2 = st.columns([1.5, 1])
 
-    # Warna konsisten
-    color_map = {
-        "Low Value / Inactive": "#808080",  # Abu-abu
-        "High Value / Loyal": "#EF8505",    # Orange Brand
-        "Medium / Potential": "#1E90FF"     # Biru
-    }
+    with col_main1:
+        st.subheader(f"🧊 3D Segmentation")
+        st.caption("Sebaran pelanggan berdasarkan Recency, Frequency, Monetary.")
+        
+        color_map = {
+            "Low Value / Inactive": "#808080", 
+            "High Value / Loyal": "#EF8505",    
+            "Medium / Potential": "#1E90FF"
+        }
 
-    fig_3d = px.scatter_3d(
-        df_rfm, # Menggunakan data yang sudah difilter
-        x='Recency',
-        y='Frequency',
-        z='Monetary',
-        color='Cluster Label',
-        color_discrete_map=color_map,
-        opacity=0.7,
-        height=600,
-        hover_data=['master_id']
-    )
-    
-    fig_3d.update_layout(
-        margin=dict(l=0, r=0, b=0, t=0),
-        scene=dict(
-            xaxis_title='Recency (Days)',
-            yaxis_title='Frequency (Count)',
-            zaxis_title='Monetary (Value)'
+        fig_3d = px.scatter_3d(
+            df_rfm,
+            x='Recency',
+            y='Frequency',
+            z='Monetary',
+            color='Cluster Label',
+            color_discrete_map=color_map,
+            opacity=0.7,
+            height=500,
+            hover_data=['master_id']
         )
-    )
-    st.plotly_chart(fig_3d, use_container_width=True)
+        fig_3d.update_layout(margin=dict(l=0, r=0, b=0, t=0))
+        st.plotly_chart(fig_3d, use_container_width=True)
+
+    with col_main2:
+        st.subheader("🛍️ Top Kategori")
+        st.caption(f"Kategori paling diminati di {selected_cluster}.")
+        
+        # --- PROSES CLEANING & EXPLODE (Specific Syntax Request) ---
+        if "interested_in_categories_12" in df_rfm.columns:
+            # 1. Copy data slice agar aman
+            df_cat = df_rfm.copy()
+            # 2. Apply function cleaning user
+            df_cat["categories"] = df_cat["interested_in_categories_12"].apply(clean_list)
+            # 3. Explode
+            df_exploded = df_cat.explode("categories")
+            # 4. Hitung
+            cat_counts = df_exploded["categories"].value_counts().reset_index()
+            cat_counts.columns = ['Category', 'Count']
+            
+            # Visualisasi Bar Chart Horizontal
+            fig_cat = px.bar(
+                cat_counts.head(10).sort_values(by="Count", ascending=True), # Top 10
+                x="Count",
+                y="Category",
+                orientation='h',
+                text='Count',
+                color='Count',
+                color_continuous_scale=px.colors.sequential.Oranges
+            )
+            fig_cat.update_layout(yaxis_title="", xaxis_title="Jumlah Peminat", showlegend=False)
+            st.plotly_chart(fig_cat, use_container_width=True)
+        else:
+            st.warning("Kolom kategori tidak ditemukan.")
 
     st.divider()
 
-    # --- 4. GLOBAL CLUSTER INSIGHTS (TIDAK TERPENGARUH FILTER) ---
-    # Bagian ini menggunakan 'df' (data total) bukan 'df_rfm' agar user tetap bisa membandingkan
-    # meskipun sedang memfilter cluster tertentu di atas.
+    # --- 4. GLOBAL CLUSTER STATS (PIE & RFM BAR) ---
+    st.subheader("📊 Statistik Global Cluster")
     
-    st.subheader("📊 Distribusi & Perbandingan Global")
-    
-    tab_dist1, tab_dist2 = st.tabs(["Distribusi Channel (Stacked)", "Total Pelanggan"])
+    tab_g1, tab_g2, tab_g3 = st.tabs(["Distribusi Cluster (Pie)", "Perbandingan RFM (Bar)", "Channel Preference"])
 
-    # A. 100% Stacked Bar Chart (Channel Distribution) - Sesuai Request Gambar
-    with tab_dist1:
-        st.markdown("#### 📱 Order Channel Preference per Cluster")
+    # Tab 1: Pie Chart Distribusi Cluster
+    with tab_g1:
+        st.markdown("#### Proporsi Jumlah Pelanggan")
+        df_pie = df['Cluster Label'].value_counts().reset_index()
+        df_pie.columns = ['Cluster', 'Count']
         
-        # Grouping Data: Hitung jumlah order per Cluster & Channel
-        # Asumsi: Kita menghitung berdasarkan jumlah user yang 'last_order_channel' atau preferensi channel
-        # Jika ingin berdasarkan total order, gunakan 'order_num_total...' tapi disini kita pakai headcount preference
+        fig_pie = px.pie(
+            df_pie, 
+            names='Cluster', 
+            values='Count',
+            color='Cluster',
+            color_discrete_map=color_map,
+            hole=0.4
+        )
+        st.plotly_chart(fig_pie, use_container_width=True)
+
+    # Tab 2: Bar Chart Rata-rata RFM per Cluster
+    with tab_g2:
+        st.markdown("#### Perbandingan Rata-rata RFM")
+        
+        # Grouping Data Global
+        df_grouped = df.groupby("Cluster Label")[["Recency", "Frequency", "Monetary"]].mean().reset_index()
+
+        c_rfm1, c_rfm2 = st.columns(2)
+        
+        with c_rfm1:
+            fig_bar_rf = px.bar(
+                df_grouped,
+                x="Cluster Label",
+                y=["Recency", "Frequency"],
+                barmode="group",
+                color_discrete_sequence=["#323232", "#EF8505"],
+                text_auto='.1f',
+                title="Recency & Frequency"
+            )
+            st.plotly_chart(fig_bar_rf, use_container_width=True)
+            
+        with c_rfm2:
+            fig_bar_m = px.bar(
+                df_grouped,
+                x="Cluster Label",
+                y="Monetary",
+                text="Monetary",
+                color="Cluster Label",
+                color_discrete_map=color_map,
+                title="Monetary Value"
+            )
+            fig_bar_m.update_traces(texttemplate='₺%{text:.2s}', textposition='outside')
+            st.plotly_chart(fig_bar_m, use_container_width=True)
+
+    # Tab 3: Channel Distribution (Stacked Bar - Dari Request Sebelumnya)
+    with tab_g3:
+        st.markdown("#### Preferensi Channel per Cluster")
         if 'order_channel' in df.columns:
             df_channel = df.groupby(['Cluster Label', 'order_channel']).size().reset_index(name='Count')
-            
-            # Hitung Persentase agar jadi 100% Stacked Bar
             df_channel['Percentage'] = df_channel.groupby('Cluster Label')['Count'].transform(lambda x: x / x.sum() * 100)
             
-            # Urutan Order Channel agar rapi
-            channel_order = df['order_channel'].unique()
-
             fig_stack = px.bar(
                 df_channel,
                 y="Cluster Label",
                 x="Percentage",
                 color="order_channel",
                 orientation='h',
-                text=df_channel['Percentage'].apply(lambda x: '{0:1.1f}%'.format(x)), # Label persen
-                color_discrete_sequence=px.colors.sequential.Oranges_r, # Tema Orange
-                title=""
+                text=df_channel['Percentage'].apply(lambda x: '{0:1.1f}%'.format(x)),
+                color_discrete_sequence=px.colors.sequential.Oranges_r
             )
-
-            fig_stack.update_layout(
-                barmode='stack', 
-                xaxis_title="Persentase (%)",
-                yaxis_title="",
-                legend_title="Channel",
-                xaxis=dict(range=[0, 100]) # Paksa 0-100%
-            )
+            fig_stack.update_layout(barmode='stack', xaxis=dict(range=[0, 100]))
             st.plotly_chart(fig_stack, use_container_width=True)
-        else:
-            st.warning("Kolom 'order_channel' tidak ditemukan.")
-
-    # B. Total Pelanggan per Cluster
-    with tab_dist2:
-        st.markdown("#### 👥 Jumlah Pelanggan per Cluster")
-        df_count = df['Cluster Label'].value_counts().reset_index()
-        df_count.columns = ['Cluster Type', 'Total User']
-        
-        fig_count = px.bar(
-            df_count,
-            x='Total User',
-            y='Cluster Type',
-            color='Cluster Type',
-            text='Total User',
-            orientation='h',
-            color_discrete_map=color_map
-        )
-        fig_count.update_layout(showlegend=False, xaxis_title="Jumlah User", yaxis_title="")
-        st.plotly_chart(fig_count, use_container_width=True)
-
 
 # ============================================================
 # PAGE 3: PREDIKSI & INSIGHT (ACTIONABLE)
