@@ -10,58 +10,101 @@ import plotly.express as px
 st.set_page_config(
     page_title="Customer Segmentation Pro",
     page_icon="💎",
-    layout="wide"
+    layout="wide",
+    initial_sidebar_state="expanded"
 )
 
 # ======================
-# 2. PREMIUM CSS STYLING
+# 2. PREMIUM CSS STYLING (THEME: DEEP ORANGE & ELEGANCE)
 # ======================
 st.markdown("""
     <style>
-        /* --- Sidebar Style --- */
-        [data-testid="stSidebar"] {
-            background-color: #EF8505 !important;
+        /* --- Import Google Font: Poppins --- */
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+        /* --- Global Font Setting --- */
+        html, body, [class*="css"] {
+            font-family: 'Poppins', sans-serif;
         }
-        [data-testid="stSidebar"] * {
-            color: white !important;
+
+        /* --- Sidebar Style (Gradient Deep Orange) --- */
+        [data-testid="stSidebar"] {
+            background: linear-gradient(180deg, #D84315 0%, #FF7043 100%);
+            border-right: 1px solid rgba(255,255,255,0.1);
         }
         
+        /* Warna Teks di Sidebar */
+        [data-testid="stSidebar"] * {
+            color: #FFFFFF !important;
+        }
+
+        /* Styling Radio Button di Sidebar agar lebih estetik */
+        .stRadio > div {
+            background-color: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+        }
+
         /* --- Header Style --- */
         [data-testid="stHeader"] {
-            background-color: #323232 !important;
+            background-color: transparent !important;
         }
 
         /* --- Main Background --- */
         .stApp {
-            background-color: #FAFAFA;
+            background-color: #F8F9FA; /* Abu-abu sangat muda, lebih lembut dari putih */
         }
 
         /* --- Custom Cards (Kotak Mewah) --- */
         .premium-card {
-            background-color: white;
-            padding: 20px;
-            border-radius: 12px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-            border-left: 5px solid #EF8505;
-            margin-bottom: 20px;
+            background-color: #FFFFFF;
+            padding: 24px;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(216, 67, 21, 0.08); /* Bayangan oranye tipis */
+            border-left: 6px solid #D84315; /* Aksen garis kiri Deep Orange */
+            margin-bottom: 24px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        /* Efek Hover pada Card */
+        .premium-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(216, 67, 21, 0.15);
         }
         
+        /* Typography untuk Card */
         .metric-label {
-            font-size: 14px;
-            color: #666;
-            font-weight: 500;
+            font-size: 13px;
+            color: #757575; /* Abu-abu medium */
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 600;
+            margin-bottom: 8px;
         }
         
         .metric-value {
-            font-size: 26px;
-            color: #323232;
-            font-weight: bold;
+            font-size: 32px;
+            color: #212121; /* Hampir hitam */
+            font-weight: 700;
+        }
+        
+        .metric-delta {
+            font-size: 14px;
+            font-weight: 500;
+            padding: 4px 8px;
+            border-radius: 6px;
         }
 
-        /* --- Navigation Clean Up --- */
-        [data-testid="stSidebar"] .element-container {
-            padding: 0px !important;
-            margin: 0px !important;
+        /* --- Titles & Headers --- */
+        h1, h2, h3 {
+            color: #BF360C !important; /* Warna judul merah bata/oranye tua */
+            font-weight: 700 !important;
+        }
+        
+        /* --- Remove Default Padding --- */
+        .block-container {
+            padding-top: 2rem;
+            padding-bottom: 2rem;
         }
     </style>
 """, unsafe_allow_html=True)
@@ -71,17 +114,17 @@ st.markdown("""
 # 3. SIDEBAR NAVIGATION
 # ======================
 with st.sidebar:
-    st.markdown('<div style="margin-bottom: 20px;">', unsafe_allow_html=True)
-    # Pastikan file alllogo.png ada di folder image/
+    st.markdown('<div style="margin-bottom: 30px; text-align: center;">', unsafe_allow_html=True)
+    # Pastikan file logo ada, atau gunakan placeholder text jika error
     try:
-        st.image("image/alllogo.png", width=220) 
+        st.image("image/alllogo.png", width=180) 
     except:
-        st.caption("Logo not found")
+        st.markdown("<h2 style='color: white !important;'>💎 CRM PRO</h2>", unsafe_allow_html=True)
     st.markdown('</div>', unsafe_allow_html=True)
 
-    st.markdown("### 🧭 Main Menu")
+    st.markdown("### 🧭 NAVIGATION MENU")
     
-    # Navigasi menggunakan Radio Button (Terpisah & Jelas)
+    # Navigasi
     page = st.sidebar.radio(
         "",
         ["Executive Overview", "Dashboard RFM", "Prediksi & Insight"],
@@ -89,8 +132,20 @@ with st.sidebar:
     )
     
     st.markdown("---")
-    st.caption("© 2025 Data Science Team\nCustomer Intelligence System")
+    
+    # Info User / Copyright
+    st.markdown("""
+        <div style="background: rgba(0,0,0,0.2); padding: 15px; border-radius: 10px; font-size: 12px;">
+            <b>Analyst Team</b><br>
+            © 2025 Customer Intelligence<br>
+            <i>Ver 2.1 - Orange Edition</i>
+        </div>
+    """, unsafe_allow_html=True)
 
+# ======================
+# 4. LOAD DATA (Tetap Sama)
+# ======================
+# ... (lanjutkan dengan kode load data kamu yang lama)
 # ======================
 # 4. LOAD DATA & MODELS
 # ======================
