@@ -116,69 +116,103 @@ st.markdown(f"""
 """, unsafe_allow_html=True)
 
 # ======================
-# CSS SUPER AESTHETIC (Orange Theme)
+SIDEBAR
+# ======================
+
+import streamlit as st
+import pandas as pd
+import pickle
+import plotly.express as px
+
+# ======================
+# 1. CONFIG PAGE
+# ======================
+st.set_page_config(
+    page_title="Customer Segmentation Pro",
+    page_icon="🍊",
+    layout="wide",
+    initial_sidebar_state="expanded"
+)
+
+# ======================
+# 2. CSS SUPER AESTHETIC (Orange Theme)
 # ======================
 st.markdown("""
     <style>
-        /* 1. SIDEBAR BACKGROUND: Gradasi Oranye Elegan */
+        /* Import Font yang Estetik */
+        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&display=swap');
+
+        /* 1. SIDEBAR BACKGROUND: Gradasi Dibalik (Kuning ke Oranye) */
         [data-testid="stSidebar"] {
-            background: linear-gradient(180deg, #F37335 0%, #FDC830 100%); /* Citrus Peel Gradient */
+            /* Warna dibalik: #FDC830 (Kuning) di atas, #F37335 (Oranye) di bawah */
+            background: linear-gradient(180deg, #FDC830 0%, #F37335 100%);
             border-right: 1px solid rgba(255,255,255,0.2);
         }
 
-        /* 2. MENU ITEM STYLING ("Dikotakin") */
-        /* Mengubah tampilan Radio Button menjadi tombol/kartu */
-        .stRadio div[role='radiogroup'] > label {
-            background-color: rgba(255, 255, 255, 0.15); /* Transparan putih (Kaca) */
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            padding: 12px 15px;       /* Jarak dalam agar terlihat 'tebal' */
-            border-radius: 12px;      /* Sudut membulat */
-            margin-bottom: 10px;      /* Jarak antar menu */
-            transition: all 0.3s ease;
-            cursor: pointer;
-            color: white !important;  /* Warna teks putih */
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        /* 2. HEADER MAIN MENU ESTETIK */
+        .sidebar-header {
+            font-family: 'Outfit', sans-serif;
+            font-size: 24px;              /* Ukuran font lebih besar */
+            font-weight: 800;             /* Sangat tebal */
+            color: white;
+            text-align: center;           /* Posisi Tengah */
+            margin-bottom: 20px;
+            margin-top: 10px;
+            text-transform: uppercase;    /* Huruf Kapital semua biar estetik */
+            letter-spacing: 2px;          /* Jarak antar huruf renggang */
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: center;      /* Pastikan benar-benar di tengah */
+            align-items: center;
         }
 
-        /* Efek saat mouse diarahkan (Hover) */
+        /* 3. MENU ITEM STYLING ("Dikotakin & Seragam") */
+        .stRadio div[role='radiogroup'] > label {
+            background-color: rgba(255, 255, 255, 0.2); /* Transparan kaca */
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            padding: 12px 20px;
+            border-radius: 15px;          /* Lebih bulat sedikit */
+            margin-bottom: 12px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            color: white !important;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            
+            /* KUNCI AGAR KOTAK SAMA BESAR */
+            width: 100%;                  
+            display: flex;
+            justify-content: flex-start;  /* Teks rata kiri di dalam kotak */
+            align-items: center;
+        }
+
+        /* Efek Hover */
         .stRadio div[role='radiogroup'] > label:hover {
-            background-color: rgba(255, 255, 255, 0.4); /* Lebih terang saat hover */
-            transform: translateX(5px); /* Geser sedikit ke kanan */
-            box-shadow: 0 6px 10px rgba(0,0,0,0.1);
+            background-color: rgba(255, 255, 255, 0.5);
+            transform: scale(1.02);       /* Efek membesar sedikit */
+            box-shadow: 0 8px 15px rgba(0,0,0,0.1);
         }
 
         /* Teks di dalam Radio Button */
         .stRadio div[role='radiogroup'] label p {
+            font-family: 'Outfit', sans-serif;
             font-size: 16px !important;
-            font-weight: 500 !important;
+            font-weight: 600 !important;
             color: white !important;
+            margin: 0 !important;
         }
 
-        /* Menghilangkan bulatan radio button bawaan Streamlit agar full kotak */
+        /* Hapus bulatan radio button default */
         .stRadio div[role='radiogroup'] label div[data-testid="stMarkdownContainer"] {
             display: flex;
             align-items: center;
+            width: 100%;
+        }
+        
+        /* Hapus elemen lingkaran default Streamlit */
+        div[data-testid="stRadio"] > div {
+             gap: 0px;
         }
 
-        /* 3. HEADER MAIN MENU */
-        .sidebar-header {
-            font-family: 'Outfit', sans-serif;
-            font-size: 20px;
-            font-weight: 700;
-            color: white;
-            margin-bottom: 15px;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        /* Garis pemisah estetik */
-        hr {
-            margin: 20px 0;
-            border: none;
-            border-top: 1px solid rgba(255,255,255,0.3);
-        }
     </style>
 """, unsafe_allow_html=True)
 
@@ -187,41 +221,38 @@ st.markdown("""
 # ======================
 with st.sidebar:
     # --- LOGO SECTION ---
-    st.markdown('<div style="text-align: center; margin-bottom: 30px; margin-top: 20px;">', unsafe_allow_html=True)
+    # Container logo dibuat agak tinggi sesuai request sebelumnya
+    st.markdown('<div style="text-align: center; margin-bottom: 20px; margin-top: 30px;">', unsafe_allow_html=True)
     try:
-        # Ganti dengan path logo kamu
-        st.image("image/alllogo.png", width=200) 
+        st.image("image/alllogo.png", width=220) 
     except:
-        # Fallback jika logo error: Teks Estetik
+        # Fallback Logo
         st.markdown("""
-            <div style="background: rgba(255,255,255,0.2); padding: 15px; border-radius: 50%; width: 80px; height: 80px; margin: 0 auto; display: flex; align-items: center; justify-content: center;">
-                <span style="font-size: 40px;">🍊</span>
-            </div>
+            <h1 style='color: white; font-size: 50px; text-align: center; margin: 0;'>🍊</h1>
         """, unsafe_allow_html=True)
     st.markdown('</div>', unsafe_allow_html=True)
 
-    # --- CUSTOM HEADER ---
-    # Menggunakan HTML custom agar lebih rapi daripada st.markdown("### ...")
+    # --- CUSTOM HEADER (CENTERED & AESTHETIC) ---
     st.markdown("""
         <div class="sidebar-header">
-            <span></span> Main Menu
+            Main Menu
         </div>
     """, unsafe_allow_html=True)
 
-    # --- NAVIGATION MENU (Radio Button rasa Tombol) ---
-    # Kita tambahkan Emoji langsung di dalam list agar terlihat seperti Icon
+    # --- NAVIGATION MENU ---
+    # Spasi di dalam string ditambahkan agar teks tidak terlalu mepet ke kiri kotak
     selected_page = st.sidebar.radio(
         "",
         [
-            "Executive Overview ", 
-            "Dashboard RFM      ", 
-            "Prediksi & Insight "
+            "Executive Overview", 
+            "Dashboard RFM", 
+            "Prediksi & Insight"
         ],
         index=0,
-        label_visibility="collapsed" # Menyembunyikan label default "Choose an option"
+        label_visibility="collapsed"
     )
 
-    # Mapping pilihan kembali ke nama halaman asli (untuk logika page di bawah)
+    # Logika Page
     if "Executive" in selected_page:
         page = "Executive Overview"
     elif "RFM" in selected_page:
@@ -232,21 +263,21 @@ with st.sidebar:
     # --- FOOTER ---
     st.markdown("---")
     st.markdown("""
-        <div style="text-align: center; background: rgba(255,255,255,0.1); padding: 15px; border-radius: 12px; margin-top: 20px;">
-            <p style="font-size: 11px; color: rgba(255,255,255,0.8); margin: 0; font-weight: bold;">
+        <div style="text-align: center; background: rgba(255,255,255,0.15); padding: 20px; border-radius: 15px; margin-top: 10px;">
+            <p style="font-family: 'Outfit'; font-size: 12px; color: white; margin: 0; font-weight: 800; letter-spacing: 1px;">
                 CUSTOMER INTELLIGENCE
             </p>
-            <p style="font-size: 10px; color: rgba(255,255,255,0.6); margin: 5px 0 0 0;">
+            <p style="font-family: 'Outfit'; font-size: 10px; color: rgba(255,255,255,0.8); margin: 5px 0 0 0;">
                 © 2025 Team A25-CS254
             </p>
         </div>
     """, unsafe_allow_html=True)
 
 # ======================
-# LOGIKA HALAMAN (CONTOH)
+# HALAMAN UTAMA
 # ======================
 st.title(f"{page}")
-st.write("Konten halaman di sini...")
+st.write("Konten dashboard ditampilkan di sini...")
 
 # ======================
 # 4. LOAD DATA & MODELS
