@@ -115,9 +115,9 @@ if page == "Overview":
     st.subheader("Preview Dataset")
     st.dataframe(df2.head())
 
-	st.subheader("🧾 Metadata Dataset")
+    st.subheader("🧾 Metadata Dataset")
 
-	metadata = {
+    metadata = {
 	    "Variabel": [
 	        "master_id",
 	        "order_channel",
@@ -146,12 +146,12 @@ if page == "Overview":
 	        "Total nilai transaksi online",
 	        "Kategori belanja dalam 12 bulan terakhir"
 	    ]
-	}
+    }
 	
-	metadata_df = pd.DataFrame(metadata)
-	st.dataframe(metadata_df, use_container_width=True)
+    metadata_df = pd.DataFrame(metadata)
+    st.dataframe(metadata_df, use_container_width=True)
 	
-	 st.info("Gunakan menu di sidebar untuk membuka **Dashboard RFM**.")
+    st.info("Gunakan menu di sidebar untuk membuka **Dashboard RFM**.")
 
 # ============================================================
 # ===============  HALAMAN 2 — DASHBOARD RFM ==================
