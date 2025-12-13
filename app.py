@@ -170,7 +170,8 @@ if page == "Executive Overview":
         """, unsafe_allow_html=True)
 
     # --- TABS FOR ORGANIZED CONTENT ---
-    tab1, tab2, tab3 = st.tabs(["🎯 Business Objectives", "📂 Dataset Explorer", "⚙ Methodology"])
+    # 1. GANTI NAMA TAB KE-3 MENJADI "📈 Visual Overview"
+    tab1, tab2, tab3 = st.tabs(["🎯 Business Objectives", "📂 Dataset Explorer", "📈 Visual Overview"])
 
     with tab1:
         st.subheader("Mengapa Segmentasi Itu Penting?")
@@ -183,11 +184,11 @@ if page == "Executive Overview":
             st.success("**3. Tingkatkan ROI**\n\nStrategi yang tepat sasaran terbukti meningkatkan konversi penjualan hingga 2-3x lipat.")
             
         st.markdown("#### 🔑 The RFM Concept")
-        # --- GAMBAR LOKAL ---
         try:
+            # Pastikan nama file sesuai dengan yang ada di GitHub (case-sensitive)
             st.image("image/rfmanalysisdiagram.png", caption="Recency, Frequency, Monetary Model Concept", width=600)
         except Exception:
-             st.warning("Gambar 'rfmanalysisdiagram.png' tidak ditemukan di folder 'image'. Mohon cek kembali nama file di GitHub.")
+             st.warning("Gambar 'rfmanalysisdiagram.png' tidak ditemukan. Cek folder image.")
 
     with tab2:
         st.subheader("Data Source Overview")
@@ -205,7 +206,6 @@ if page == "Executive Overview":
             }
         )
         
-        # --- UPDATE: METADATA LENGKAP DIKEMBALIKAN ---
         with st.expander("Lihat Metadata Lengkap (Kamus Data)"):
              metadata = {
                 "Variabel": [
@@ -239,34 +239,46 @@ if page == "Executive Overview":
             }
              st.table(pd.DataFrame(metadata))
 
+    # 2. ISI TAB VISUAL OVERVIEW (HAPUS YANG LAMA, MASUKKAN CHART BARU)
     with tab3:
-        st.subheader("Bagaimana AI Bekerja?")
-        col_text, col_flow = st.columns([1, 1])
+        st.subheader("Visualisasi Data Utama")
         
-        with col_text:
-            st.markdown("""
-            1.  **Data Cleaning:** Membersihkan data outlier dan missing values.
-            2.  **Normalization:** Mengubah skala data agar seimbang (Standard Scaler).
-            3.  **Dimensionality Reduction:** Menggunakan PCA (Principal Component Analysis) untuk menyederhanakan fitur.
-            4.  **Clustering:** Algoritma *K-Means* mengelompokkan pelanggan berdasarkan kemiripan pola belanja.
-            """)
+        col_viz1, col_viz2 = st.columns(2)
         
-        # --- GRAPHVIZ CHART ---
-        with col_flow:
-            st.graphviz_chart("""
-            digraph {
-                rankdir=LR;
-                node [shape=box, style=filled, fillcolor="#f9f9f9", color="#EF8505", fontname="Arial"];
-                edge [color="#323232"];
-                
-                "Raw Data" -> "Cleaning";
-                "Cleaning" -> "K-Means AI";
-                "K-Means AI" -> "Loyal";
-                "K-Means AI" -> "Potential";
-                "K-Means AI" -> "Inactive";
-            }
-            """)
-            st.caption("Flowchart sederhana proses machine learning")
+        # a. Line Chart Bulanan
+        with col_viz1:
+             st.markdown("#### 📈 Tren Pertumbuhan (Bulanan)")
+             # Proses Data: Resample ke Bulanan
+             df_trend = df.copy()
+             if 'first_order_date' in df_trend.columns:
+                 df_trend = df_trend.set_index('first_order_date')
+                 monthly_counts = df_trend.resample('MS').size().reset_index(name='count')
+                 
+                 fig_line = px.line(
+                    monthly_counts,
+                    x='first_order_date',
+                    y='count',
+                    markers=True,
+                    labels={'first_order_date': 'Bulan', 'count': 'Jumlah Order'},
+                    color_discrete_sequence=["#EF8505"]
+                 )
+                 # Hapus title di dalam chart biar tidak dobel dengan markdown
+                 fig_line.update_layout(title=None)
+                 st.plotly_chart(fig_line, use_container_width=True)
+             else:
+                 st.error("Kolom 'first_order_date' tidak ditemukan.")
+
+        # b. Pie Chart Order Channel
+        with col_viz2:
+             st.markdown("#### 🥧 Distribusi Channel")
+             fig_pie = px.pie(
+                df, 
+                names='order_channel', 
+                color='order_channel', 
+                color_discrete_sequence=px.colors.sequential.Oranges_r, 
+                hole=0.4
+             )
+             st.plotly_chart(fig_pie, use_container_width=True)
 
 
 # ============================================================
