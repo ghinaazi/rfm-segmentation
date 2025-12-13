@@ -144,7 +144,7 @@ with st.sidebar:
 
     st.markdown("---")
     st.markdown('<div style="text-align: center;">', unsafe_allow_html=True)
-    st.caption("© 2025 Data Science Team\nCustomer Intelligence System")
+    st.caption("© 2025 Team A25-CS254\nCustomer Segmentation System")
     st.markdown('</div>', unsafe_allow_html=True)
 
 # ======================
