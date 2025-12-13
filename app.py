@@ -399,128 +399,146 @@ elif page == "Dashboard RFM":
     st.write("Analisis mendalam mengenai karakteristik Recency, Frequency, dan Monetary pelanggan.")
     st.markdown("---")
 
-    # --- 1. CONFIG & DATE FILTER ---
-    # Pastikan kolom tanggal dalam format datetime
+    # --- 1. CONFIG & DATE FILTER (SPLIT STYLE) ---
     if "last_order_date" in df.columns:
         df["last_order_date"] = pd.to_datetime(df["last_order_date"])
     else:
-        st.error("⚠️ Kolom 'last_order_date' tidak ditemukan untuk perhitungan Recency.")
+        st.error("⚠️ Kolom 'last_order_date' tidak ditemukan.")
         st.stop()
 
     with st.container(border=True):
         st.markdown("### 🗓️ Filter Periode Data")
         
-        # Ambil min/max date
-        min_date = df["last_order_date"].min().date()
-        max_date = df["last_order_date"].max().date()
+        # Ambil min/max date dari data untuk batasan
+        min_date_aval = df["last_order_date"].min().date()
+        max_date_aval = df["last_order_date"].max().date()
 
-        col_f1, col_f2 = st.columns([2, 1])
-        with col_f1:
-            date_range = st.date_input(
-                "Pilih Rentang Tanggal Transaksi Terakhir",
-                value=(min_date, max_date),
-                min_value=min_date,
-                max_value=max_date
+        # Layout 2 Kolom untuk Tanggal (Sesuai Gambar)
+        col_d1, col_d2 = st.columns(2)
+        
+        with col_d1:
+            start_date = st.date_input(
+                "Mulai Tanggal",
+                value=min_date_aval,
+                min_value=min_date_aval,
+                max_value=max_date_aval
             )
         
-        # Validasi Input Tanggal (Mencegah error jika user hanya klik 1 tanggal)
-        if len(date_range) == 2:
-            start_date, end_date = date_range
-            # Filter DataFrame
-            mask = (df["last_order_date"].dt.date >= start_date) & (df["last_order_date"].dt.date <= end_date)
-            df_rfm = df.loc[mask]
-        else:
-            st.info("⏳ Harap pilih tanggal awal dan akhir.")
-            st.stop()
+        with col_d2:
+            end_date = st.date_input(
+                "Sampai Tanggal",
+                value=max_date_aval,
+                min_value=min_date_aval,
+                max_value=max_date_aval
+            )
 
-    # --- 2. KEY PERFORMANCE INDICATORS (KPI) RFM ---
-    # Handle jika data kosong setelah difilter
+        # Filter Logic
+        if start_date > end_date:
+            st.error("⚠️ Tanggal 'Mulai' tidak boleh lebih besar dari 'Sampai'.")
+            st.stop()
+            
+        mask = (df["last_order_date"].dt.date >= start_date) & (df["last_order_date"].dt.date <= end_date)
+        df_rfm = df.loc[mask]
+
+    # --- 2. KEY METRICS (KPI) NETRAL ---
     if df_rfm.empty:
         st.warning("⚠️ Tidak ada data ditemukan pada rentang tanggal ini.")
     else:
         st.markdown("### 🚀 Key Metrics (Rata-rata)")
         
-        # Hitung Rata-rata
         avg_recency = df_rfm["Recency"].mean()
         avg_freq = df_rfm["Frequency"].mean()
         avg_monetary = df_rfm["Monetary"].mean()
 
         kpi1, kpi2, kpi3 = st.columns(3)
 
+        # KPI 1: Recency (Caption Netral)
         with kpi1:
             st.markdown(f"""
             <div class="premium-card">
                 <div class="metric-label">Avg. Recency (Hari)</div>
                 <div class="metric-value">{avg_recency:.1f}</div>
-                <small>Semakin kecil semakin baik</small>
+                <small>Rata-rata hari sejak order terakhir</small>
             </div>
             """, unsafe_allow_html=True)
 
+        # KPI 2: Frequency
         with kpi2:
             st.markdown(f"""
             <div class="premium-card">
                 <div class="metric-label">Avg. Frequency</div>
                 <div class="metric-value">{avg_freq:.1f}x</div>
-                <small>Rata-rata transaksi per user</small>
+                <small>Rata-rata frekuensi transaksi</small>
             </div>
             """, unsafe_allow_html=True)
 
+        # KPI 3: Monetary
         with kpi3:
             st.markdown(f"""
             <div class="premium-card">
                 <div class="metric-label">Avg. Monetary</div>
                 <div class="metric-value">₺{avg_monetary:,.0f}</div>
-                <small>Total belanja rata-rata</small>
+                <small>Rata-rata nilai belanja</small>
             </div>
             """, unsafe_allow_html=True)
 
         st.markdown("---")
 
-        # --- 3. CLUSTER VISUALIZATION (3D SCATTER) ---
-        st.subheader("🧊 3D Cluster Visualization")
-        st.caption("Interaksi: Putar, Zoom, dan Hover untuk melihat detail tiap pelanggan.")
+        # --- 3. DYNAMIC CLUSTER SCATTER PLOT (FITUR BARU) ---
+        st.subheader("🔍 Visualisasi Sebaran Cluster (2D)")
+        st.caption("Pilih variabel sumbu X dan Y untuk menganalisis pola sebaran pelanggan.")
 
         if "Cluster" in df_rfm.columns:
-            # Map Cluster ID ke Nama agar Legend Rapi
             df_rfm["Cluster Label"] = df_rfm["Cluster"].map(cluster_names)
+            
+            # Container untuk kontrol variabel
+            with st.container(border=True):
+                c_sel1, c_sel2 = st.columns(2)
+                with c_sel1:
+                    x_axis_val = st.selectbox("Pilih Sumbu X (Horizontal)", options=["Recency", "Frequency", "Monetary"], index=0)
+                with c_sel2:
+                    y_axis_val = st.selectbox("Pilih Sumbu Y (Vertikal)", options=["Recency", "Frequency", "Monetary"], index=2)
+            
+            # Logic agar warna konsisten
+            color_map = {
+                "Low Value / Inactive": "#808080", 
+                "High Value / Loyal": "#EF8505",    
+                "Medium / Potential": "#1E90FF"
+            }
 
-            # Buat 3D Scatter Plot
-            fig_3d = px.scatter_3d(
+            # Buat Chart 2D
+            fig_scatter = px.scatter(
                 df_rfm,
-                x='Recency',
-                y='Frequency',
-                z='Monetary',
-                color='Cluster Label',
-                color_discrete_map={
-                    "Low Value / Inactive": "#808080",  # Abu-abu
-                    "High Value / Loyal": "#EF8505",    # Orange Brand
-                    "Medium / Potential": "#1E90FF"     # Biru
-                },
-                opacity=0.7,
-                height=600,
-                hover_data=['master_id']
+                x=x_axis_val,
+                y=y_axis_val,
+                color="Cluster Label",
+                color_discrete_map=color_map,
+                hover_data=['master_id', 'Recency', 'Frequency', 'Monetary'],
+                height=500,
+                opacity=0.6
             )
             
-            fig_3d.update_layout(
-                margin=dict(l=0, r=0, b=0, t=0),
-                scene=dict(
-                    xaxis_title='Recency (Days)',
-                    yaxis_title='Frequency (Count)',
-                    zaxis_title='Monetary (Value)'
-                )
+            fig_scatter.update_layout(
+                xaxis_title=x_axis_val,
+                yaxis_title=y_axis_val,
+                legend_title="Tipe Pelanggan",
+                plot_bgcolor='white'
             )
-            st.plotly_chart(fig_3d, use_container_width=True)
+            # Tambahkan garis grid tipis agar lebih rapi
+            fig_scatter.update_xaxes(showgrid=True, gridwidth=1, gridcolor='#f0f0f0')
+            fig_scatter.update_yaxes(showgrid=True, gridwidth=1, gridcolor='#f0f0f0')
+
+            st.plotly_chart(fig_scatter, use_container_width=True)
+
         else:
-            st.warning("⚠️ Kolom 'Cluster' tidak ditemukan dalam data.")
+            st.warning("⚠️ Data Cluster belum tersedia.")
 
         st.divider()
 
-        # --- 4. COMPARED STATISTICS (BAR CHARTS) ---
-        # Bagian ini tetap dipertahankan namun menggunakan data yang sudah difilter (df_rfm)
+        # --- 4. CLUSTER CHARACTERISTICS (BAR CHARTS - TETAP DIPERTAHANKAN) ---
         st.subheader("📊 Perbandingan Karakteristik Cluster")
         
         if "Cluster" in df_rfm.columns:
-            # Grouping Data
             df_grouped = df_rfm.groupby("Cluster Label")[["Recency", "Frequency", "Monetary"]].mean().reset_index()
 
             col_c1, col_c2 = st.columns(2)
@@ -546,16 +564,11 @@ elif page == "Dashboard RFM":
                     y="Monetary",
                     text="Monetary",
                     color="Cluster Label",
-                    color_discrete_map={
-                    "Low Value / Inactive": "#808080",
-                    "High Value / Loyal": "#EF8505",
-                    "Medium / Potential": "#1E90FF"
-                    }
+                    color_discrete_map=color_map
                 )
                 fig_mon.update_traces(texttemplate='₺%{text:.2s}', textposition='outside')
                 fig_mon.update_layout(yaxis_title="Monetary (₺)", xaxis_title="", showlegend=False)
                 st.plotly_chart(fig_mon, use_container_width=True)
-
 
 # ============================================================
 # PAGE 3: PREDIKSI & INSIGHT (ACTIONABLE)
