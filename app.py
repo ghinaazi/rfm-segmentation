@@ -17,9 +17,9 @@ import plotly.express as px
 # CONFIG PAGE
 # ======================
 st.set_page_config(
-    page_title="Customer Segmentation App",
-    page_icon="📊",
-    layout="wide"
+    page_title="Customer Segmentation App",
+    page_icon="📊",
+    layout="wide"
 )
 
 # ======================
