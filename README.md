@@ -18,7 +18,7 @@ Proyek ini bertujuan untuk:
 3. Menyajikan hasil analisis dan segmentasi pelanggan melalui dashboard interaktif, sehingga wawasan yang dihasilkan dapat divisualisasikan secara jelas, mudah dipahami, dan mendukung pengambilan keputusan yang cepat, tepat, dan berbasis data.
 
 # Dashboard
-[![Dashboard Preview](image/previewfix.png)](https://rfm-segmentation-3.streamlit.app/)
+[![Dashboard Preview](image/previewfix.png)](https://rfm-segmentation-project.streamlit.app/)
 
 # Teknologi & Library 
 | Kategori          | Tools / Library                                 |
