@@ -17,7 +17,7 @@ Proyek ini bertujuan untuk:
 2. Mengembangkan model segmentasi pelanggan yang akurat dan representatif menggunakan algoritma clustering seperti K-Means atau Fuzzy C-Means, serta mengevaluasi bagaimana setiap algoritma membentuk kelompok pelanggan yang memiliki karakteristik serupa.
 3. Menyajikan hasil analisis dan segmentasi pelanggan melalui dashboard interaktif, sehingga wawasan yang dihasilkan dapat divisualisasikan secara jelas, mudah dipahami, dan mendukung pengambilan keputusan yang cepat, tepat, dan berbasis data.
 
-4. # Dashboard
+# Dashboard
 [![Dashboard Preview](image/previewfix.png)](https://rfm-segmentation-3.streamlit.app/)
 
 # Teknologi & Library 
