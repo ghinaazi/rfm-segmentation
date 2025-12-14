@@ -20,6 +20,13 @@ Proyek ini bertujuan untuk:
 # Dashboard
 [![Dashboard Preview](image/previewfix.png)](https://rfm-segmentation-project.streamlit.app/)
 
+### Langkah-Langkah Penggunaan
+1. Dashboard memiliki tiga bagian utama:
+   - Executive Overview: Ringkasan secara umum mengenai proyek, dataset, serta eksplorasi dataset secara umum
+   - Dashboard RFM: Eksplorasi dataset pelanggan berdasarkan cluster
+   - Prediksi Insight: Menginput data RFM pelangan untuk menentukan cluster dan rekomendasi
+2. Untuk menentukan cluster pelanggan, dibutuhkan data Recency, Frequency, dan Monetary pelanggan. Masukkan data bagian "Prediksi Insight" lalu klik "Analisis Sekarang" untuk melihat cluster pelanggan dan prediksi yang sesuai.
+
 # Teknologi & Library 
 | Kategori          | Tools / Library                                 |
 |-------------------|--------------------------------------------------|
