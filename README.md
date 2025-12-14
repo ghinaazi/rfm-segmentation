@@ -42,3 +42,4 @@ Proyek ini bertujuan untuk:
 1. Dataset yang digunakan adalah dataset [FLO Shopping Dataset](https://www.kaggle.com/datasets/mustafaoz158/flo-data) dari kaggle
 2. Algoritma yang dipilih adalah K-Means dengan Silhouette Score 0.589 dengan pertimbangan visualisasi pemisahan cluster yang lebih baik
 3. Cluster diinterpretasikan berdasarkan karakteristik Recency, Frequency, dan Monetary
+File model di [Link ini](https://drive.google.com/drive/folders/1_8wUpxUNh2H_DKLLb6lL7lc2rj4YxahQ?usp=drive_link).
