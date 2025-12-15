@@ -20,6 +20,9 @@ Proyek ini bertujuan untuk:
 # Dashboard
 [![Dashboard Preview](image/previewfix.png)](https://rfm-segmentation-project.streamlit.app/)
 
+### Deployment & Integrasi
+Dashboard ini dikembangkan menggunakan **Streamlit** dan di-hosting melalui **Streamlit Cloud**. Sistem ini terintegrasi penuh dengan repositori **GitHub**, sehingga menerapkan prinsip *Continuous Deployment*: setiap perubahan kode atau syntax pada file `.py` di GitHub akan langsung memicu pembaruan otomatis pada live dashboard secara *real-time*.
+
 ### Langkah-Langkah Penggunaan
 1. Dashboard memiliki tiga bagian utama:
    - Executive Overview: Ringkasan secara umum mengenai proyek, dataset, serta eksplorasi dataset secara umum
@@ -28,7 +31,7 @@ Proyek ini bertujuan untuk:
 2. Untuk menentukan cluster pelanggan, dibutuhkan data Recency, Frequency, dan Monetary pelanggan. Masukkan data bagian "Prediksi Insight" lalu klik "Analisis Sekarang" untuk melihat cluster pelanggan dan prediksi yang sesuai.
 
 # Teknologi & Library 
-| Kategori          | Tools / Library                                 |
+| Kategori          | Tools / Library                                  |
 |-------------------|--------------------------------------------------|
 | Bahasa            | Python                                           |
 | Data Processing   | Pandas, NumPy                                    |
