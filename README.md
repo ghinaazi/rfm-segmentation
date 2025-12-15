@@ -21,7 +21,7 @@ Proyek ini bertujuan untuk:
 [![Dashboard Preview](image/previewfix.png)](https://rfm-segmentation-project.streamlit.app/)
 
 ### Deployment & Integrasi
-Dashboard ini dikembangkan menggunakan **Streamlit** dan di-hosting melalui **Streamlit Cloud**. Sistem ini terintegrasi penuh dengan repositori **GitHub**, sehingga menerapkan prinsip *Continuous Deployment*: setiap perubahan kode atau syntax pada file `.py` di GitHub akan langsung memicu pembaruan otomatis pada live dashboard secara *real-time*.
+Dashboard ini dikembangkan menggunakan **Streamlit** dan di-hosting melalui **Streamlit Cloud**. Sistem ini terintegrasi penuh dengan repositori **GitHub**, sehingga menerapkan prinsip *Continuous Deployment*: setiap perubahan kode atau syntax pada file `app.py` di GitHub akan langsung memicu pembaruan otomatis pada live dashboard secara *real-time*.
 
 ### Langkah-Langkah Penggunaan
 1. Dashboard memiliki tiga bagian utama:
