@@ -17,11 +17,20 @@ Proyek ini bertujuan untuk:
 2. Mengembangkan model segmentasi pelanggan yang akurat dan representatif menggunakan algoritma clustering seperti K-Means atau Fuzzy C-Means, serta mengevaluasi bagaimana setiap algoritma membentuk kelompok pelanggan yang memiliki karakteristik serupa.
 3. Menyajikan hasil analisis dan segmentasi pelanggan melalui dashboard interaktif, sehingga wawasan yang dihasilkan dapat divisualisasikan secara jelas, mudah dipahami, dan mendukung pengambilan keputusan yang cepat, tepat, dan berbasis data.
 
+# Detail Pemodelan Clustering
+1. Dataset yang digunakan adalah dataset [FLO Shopping Dataset](https://www.kaggle.com/datasets/mustafaoz158/flo-data) dari kaggle
+2. Dilakukan tahapan *pre-processing* data untuk membersihkan dan menyiapkan data agar siap diolah
+3. Dilakukan perhitungan skor RFM untuk mendapatkan nilai Recency, Frequency, dan Monetary setiap pelanggan
+4. Algoritma yang dipilih adalah K-Means dengan Silhouette Score 0.589 dengan pertimbangan visualisasi pemisahan cluster yang lebih baik
+5. Cluster diinterpretasikan berdasarkan karakteristik Recency, Frequency, dan Monetary
+
+File model di [Link ini](https://drive.google.com/drive/folders/1_8wUpxUNh2H_DKLLb6lL7lc2rj4YxahQ?usp=drive_link).
+
 # Dashboard
 [![Dashboard Preview](image/previewfix.png)](https://rfm-segmentation-project.streamlit.app/)
 
 ### Deployment & Integrasi
-Dashboard ini dikembangkan menggunakan **Streamlit** dan di-hosting melalui **Streamlit Cloud**. Sistem ini terintegrasi penuh dengan repositori **GitHub**, sehingga menerapkan prinsip *Continuous Deployment*: setiap perubahan kode atau syntax pada file `app.py` di GitHub akan langsung memicu pembaruan otomatis pada live dashboard secara *real-time*.
+Dashboard ini dikembangkan menggunakan **Streamlit** dan di-hosting melalui **Streamlit Cloud**. Sistem ini terintegrasi penuh dengan repositori **GitHub**, sehingga menerapkan prinsip *Continuous Deployment*: setiap perubahan kode atau syntax pada file `.py` di GitHub akan langsung memicu pembaruan otomatis pada live dashboard secara *real-time*.
 
 ### Langkah-Langkah Penggunaan
 1. Dashboard memiliki tiga bagian utama:
@@ -40,10 +49,3 @@ Dashboard ini dikembangkan menggunakan **Streamlit** dan di-hosting melalui **St
 | Clustering        | KMeans, Fuzzy C-Means (scikit-fuzzy)             |
 | Evaluasi Model    | Silhouette Score                                 |
 | Tools Tambahan    | Yellowbrick (KElbowVisualizer), Google Colab     |
-
-# Detail Pemodelan Clustering
-1. Dataset yang digunakan adalah dataset [FLO Shopping Dataset](https://www.kaggle.com/datasets/mustafaoz158/flo-data) dari kaggle
-2. Algoritma yang dipilih adalah K-Means dengan Silhouette Score 0.589 dengan pertimbangan visualisasi pemisahan cluster yang lebih baik
-3. Cluster diinterpretasikan berdasarkan karakteristik Recency, Frequency, dan Monetary
-   
-File model di [Link ini](https://drive.google.com/drive/folders/1_8wUpxUNh2H_DKLLb6lL7lc2rj4YxahQ?usp=drive_link).
